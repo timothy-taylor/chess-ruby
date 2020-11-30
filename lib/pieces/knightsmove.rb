@@ -2,11 +2,11 @@ require_relative "../movement.rb"
 require_relative "../board.rb"
 
 class Knight
-  attr_reader :start_pos
+  attr_accessor :current_pos
 
-  def initialize(parent)
+  def initialize(parent, position)
     @board = parent
-    # @start_pos = [0, 2]
+    @current_pos = position
   end
 
   def available_moves(position)
@@ -21,9 +21,9 @@ class Knight
     return allowable
   end
 
-  def knight_moves(start, finish)
-    move_tree = Tree.new(start)
+  def knight_moves(finish)
+    move_tree = Tree.new(@current_pos)
     node = move_tree.populate_and_return(self, finish, move_tree.root)
-    move_tree.retrace_steps(start, node)
+    move_tree.retrace_steps(@current_pos, node)
   end
 end

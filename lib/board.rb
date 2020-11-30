@@ -5,21 +5,23 @@ module ChessSet
                    :bishop => "♗", :queen => "♕", :king => "♔" }
   BLACK_PIECES = { :pawn => "♟︎", :rook => "♜", :knight => "♞",
                    :bishop => "♝", :queen => "♛", :king => "♚" }
+ 
   def setup(array, w = WHITE_PIECES, b = BLACK_PIECES)
-    black_back_row = [b[:rook], b[:knight], b[:bishop], b[:king], b[:queen],
-                      b[:bishop], b[:knight], b[:rook]]
     black_front_row = Array.new(8, b[:pawn])
-    white_back_row = [w[:rook], w[:knight], w[:bishop], w[:king], w[:queen],
-                      w[:bishop], w[:knight], w[:rook]]
+    black_back_row = [b[:rook], b[:knight], b[:bishop], b[:queen], b[:king],
+                      b[:bishop], b[:knight], b[:rook]]
+ 
     white_front_row = Array.new(8, w[:pawn])
+    white_back_row = [w[:rook], w[:knight], w[:bishop], w[:queen], w[:king],
+                      w[:bishop], w[:knight], w[:rook]]
 
-    populate_row(0, array, black_back_row)
-    populate_row(1, array, black_front_row)
-    populate_row(7, array, white_back_row)
-    populate_row(6, array, white_front_row)
+    populate_row(black_back_row, 0, array)
+    populate_row(black_front_row, 1, array)
+    populate_row(white_back_row, 7, array)
+    populate_row(white_front_row, 6, array)
   end
 
-  def populate_row(row, array, set)
+  def populate_row(set, row, array)
     array[row].each_with_index { |e, i| array[row][i] = set[i] }
   end
 end
@@ -30,23 +32,27 @@ class Board
   attr_accessor :board
 
   def initialize
-    @board = Array.new(8) {Array.new(8, "-")}
+    @board = Array.new(8) {Array.new(8)}
     setup(@board)
     pp @board
   end
 
   
   def allowable_move?(position)
-    if position[0] < 0 || position[1] < 0
-      false
-    elsif position[0] > 8 || position[1] > 8
-      false
-    else
+    # needs work, need a way to register current place in array
+    # make sure it doesn't go outside the array
+    if @board[position[0]][position[1]].nil?
       true
+    else
+      false
     end
   end  
 
   def create_knight
-    Knight.new(self)
+    # lets use this to populate the array
+    b_knight_one = Knight.new(self, [0,1])
+    b_knight_two = Knight.new(self, [0,6])
+    w_knight_one = Knight.new(self, [7,1])
+    w_knight_two = Knight.new(self, [7,6])
   end
 end
