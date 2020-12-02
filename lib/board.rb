@@ -5,17 +5,12 @@ require_relative "chess_set.rb"
 class Board
   include ChessSet
 
-  attr_accessor :board, :working_hash, :black, :white
+  attr_accessor :board, :black, :white
 
   def initialize
     @board = Array.new(8) {Array.new(8)}
-    @working_hash = Hash.new
   end
-
-  def update_hash(key, value)
-    @working_hash.store(key, value)
-  end
-
+  
   def create_black_side
     @black = BlackSide.new
   end
@@ -29,19 +24,12 @@ class Board
   end
   
   def allowable_move?(position)
-    # needs work, need a way to register current place in array
-    if position[0] < 0 || position[1] < 0 # probably move this to beginning
-        false
+    if position[0] < 0 || position[1] < 0
+      false
     elsif position[0] > 8 || position[1] > 8
-        false
+      false
     else
-      if @board[position[0]][position[1]].nil?
-        true
-      # elsif board is position is occupied by other player
-      else
-        # define king logic
-        false
-      end
+      true
     end
   end  
 end
