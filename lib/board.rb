@@ -47,19 +47,27 @@ class Board
 end
 
 class BlackSide < Board
+  include ChessSet
+  
+  attr_accessor :blk_kht_1, :blk_kht_2
+
   def initialize
   end
 
   def create_knights
     binding.pry
-    blk_kht_1 = Knight.new(self, [0, 1])
+    @blk_kht_1 = Knight.new(self, [0, 1])
     update_hash("blk_kht_1", blk_kht_1.current_pos)
-    blk_kht_2 = Knight.new(self, [0, 6])
+    @blk_kht_2 = Knight.new(self, [0, 6])
     update_hash("blk_kht_2", blk_kht_2.current_pos)
   end
 end
 
 class WhiteSide < Board
+  include ChessSet
+
+  attr_accessor :wht_kht_1, :wht_kht_2
+
   def initialize
     create_knight
   end
