@@ -11,4 +11,5 @@ module ChessSet
          "wht_kht_1" => [WP[:knight], [7,1]],
          "wht_kht_2" => [WP[:knight], [7,6]]
        }
+
 end

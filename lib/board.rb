@@ -8,7 +8,17 @@ class Board
   attr_accessor :board, :black, :white
 
   def initialize
+  end
+
+  def make_board
     @board = Array.new(8) {Array.new(8)}
+  end 
+    
+  def place_piece(id_str, array = @board)
+    piece = ID[id_str][0]
+    position = ID[id_str][1]
+    array[position[0]][position[1]] = piece
+    return array
   end
   
   def create_black_side
@@ -19,10 +29,6 @@ class Board
     @white = WhiteSide.new
   end
 
-  def print_board
-    pp @board
-  end
-  
   def allowable_move?(position)
     if position[0] < 0 || position[1] < 0
       false
