@@ -1,6 +1,9 @@
 require "pry"
+require "pp"
 require_relative "pieces/knightsmove"
 require_relative "chess_set.rb"
+
+# frozen_string_literal: true 
 
 class Board
   include ChessSet
@@ -8,11 +11,21 @@ class Board
   attr_accessor :board, :black, :white
 
   def initialize
+    @board = make_board
+    @black = create_black_side
+    @white = create_white_side
   end
 
   def make_board
-    @board = Array.new(8) {Array.new(8)}
+    Array.new(8) {Array.new(8)}
   end 
+
+  def print_board(array = @board)
+    fmt = array.map { |e|
+      e.map { |j| j || '□' }
+    }
+    pp fmt
+  end
     
   def place_piece(id_str, array = @board)
     piece = ID[id_str][0]
@@ -21,11 +34,11 @@ class Board
   end
   
   def create_black_side
-    @black = BlackSide.new(self)
+    BlackSide.new(self)
   end
 
   def create_white_side
-    @white = WhiteSide.new(self)
+    WhiteSide.new(self)
   end
 
   def allowable_move?(position)
