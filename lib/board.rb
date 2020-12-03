@@ -28,6 +28,10 @@ class Board
   end
     
   def place_piece(id_str, array = @board)
+    # this version of this is no longer necessary
+    # now that i am creating and assigning the pieces in the Side class
+    # but it will be reworked for making moves I believe
+    # so I am going to leave it until then
     piece = ID[id_str][0]
     position = ID[id_str][1]
     array[position[0]][position[1]] = piece
@@ -38,7 +42,6 @@ class Board
   end
 
   def create_white_side
-    WhiteSide.new(self)
   end
 
   def allowable_move?(position)
@@ -55,89 +58,48 @@ end
 class BlackSide < Board
   include ChessSet
 
+  attr_accessor :blk_kht_1
+
   def initialize(board)
     @parent = board
     create_pawn_ids("black")
-    create_knights
-    create_rooks
-    create_bishops
-    create_king
-    create_queen
-    create_pawns
+    
   end
 
-  def create_knights
-    place_piece("blk_kht_1", @parent.board)
-    place_piece("blk_kht_2", @parent.board)
-  end
-
-  def create_rooks
-    place_piece("blk_rok_1", @parent.board)
-    place_piece("blk_rok_2", @parent.board)
-  end
-
-  def create_bishops
-    place_piece("blk_bsh_1", @parent.board)
-    place_piece("blk_bsh_2", @parent.board)
-  end
-
-  def create_king
-    place_piece("blk_kng_1", @parent.board)
-  end
-
-  def create_queen
-    place_piece("blk_que_1", @parent.board)
-  end
-
-  def create_pawns
-    8.times do |n|
+  def create_pieces
+    create_knight(self, "blk_kht_1")
+    create_knight(self, "blk_kht_2")
+    create_rook(self, "blk_rok_1")
+    create_rook(self, "blk_rok_2") 
+    create_bishop(self, "blk_bsh_1")
+    create_bishop(self, "blk_bsh_2")
+    create_king(self, "blk_kng_1")
+    create_queen(self, "blk_que_1")
+    8.times do |n| 
       id = "blk_pwn_#{n}"
-      place_piece(id, @parent.board)
+      create_pawn(self, id)
     end
   end
-end
 
-class WhiteSide < Board
-  include ChessSet
-
-  def initialize(board)
-    @parent = board
-    create_pawn_ids("white")
-    create_knights
-    create_rooks
-    create_bishops
-    create_king
-    create_queen
-    create_pawns
+  def create_knight(parent, id)
+    symbol = ID[id][0]
+    position = ID[id][1]
+    Knight.new(id, parent, symbol, position)
+    @parent.board[position[0]][position[1]] = symbol
   end
 
-  def create_knights
-    place_piece("wht_kht_1", @parent.board)
-    place_piece("wht_kht_2", @parent.board)
+  def create_rook(parent, id)
   end
 
-  def create_rooks
-    place_piece("wht_rok_1", @parent.board)
-    place_piece("wht_rok_2", @parent.board)
+  def create_bishop(parent, id)
   end
 
-  def create_bishops
-    place_piece("wht_bsh_1", @parent.board)
-    place_piece("wht_bsh_2", @parent.board)
+  def create_king(parent, id)
   end
 
-  def create_king
-    place_piece("wht_kng_1", @parent.board)
+  def create_queen(parent, id)
   end
 
-  def create_queen
-    place_piece("wht_que_1", @parent.board)
-  end
-
-  def create_pawns
-    8.times do |n|
-      id = "wht_pwn_#{n}"
-      place_piece(id, @parent.board)
-    end
+  def create_pawn(parent, id)
   end
 end

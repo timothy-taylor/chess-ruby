@@ -1,7 +1,7 @@
 module ChessSet
-  WP = { :pawn => "♙", :rook => "♖", :knight => "♘",
+  BP = { :pawn => "♙", :rook => "♖", :knight => "♘",
                    :bishop => "♗", :queen => "♕", :king => "♔" }
-  BP = { :pawn => "♟︎", :rook => "♜", :knight => "♞",
+  WP = { :pawn => "♟︎", :rook => "♜", :knight => "♞",
                    :bishop => "♝", :queen => "♛", :king => "♚" }
 
   ID = { "blk_kht_1" => [BP[:knight], [0,1]],
