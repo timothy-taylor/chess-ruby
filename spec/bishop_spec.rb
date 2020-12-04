@@ -13,13 +13,13 @@ describe Bishop do
     end
   end
 
- # describe "#moves" do
- #   it "creates a new node in the bishop move_tree" do
- #     play = Board.new
- #     black = play.create_black_side
- #     bishop = black.create_bishop("blk_bsh_1")
- #     expect(bishop.moves([0, 4])).to be_an_instance_of(Node)
- #   end
- # end
+  describe "#moves" do
+    it "creates a new node in the bishop move_tree" do
+      play = Board.new
+      black = play.create_black_side
+      bishop = black.create_bishop("blk_bsh_1")
+      expect(bishop.moves([1, 3])).to be_an_instance_of(Node)
+    end
+  end
 end
 

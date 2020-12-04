@@ -6,7 +6,7 @@ require_relative "chess_set.rb"
 require_relative "pieces/knight.rb"
 require_relative "pieces/rook.rb"
 require_relative "pieces/bishop.rb"
-#require_relative "pieces/queen.rb"
+require_relative "pieces/queen.rb"
 #require_relative "pieces/king.rb"
 #require_relative "pieces/pawn.rb"
 
@@ -87,8 +87,8 @@ class BlackSide < Board
     create_rook("blk_rok_2") 
     create_bishop("blk_bsh_1")
     create_bishop("blk_bsh_2")
-   # create_king("blk_kng_1")
-   # create_queen("blk_que_1")
+    create_queen("blk_que_1")
+    # create_king("blk_kng_1")
    # 8.times do |n| 
    #   id = "blk_pwn_#{n}"
    #   create_pawn(id)

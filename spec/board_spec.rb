@@ -54,7 +54,7 @@ describe BlackSide do
       play = Board.new
       play.black.create_pieces
       expect(play.board).to eql(
-        [["♖", "♘", "♗", nil, nil, "♗", "♘", "♖"],
+        [["♖", "♘", "♗", "♕", nil, "♗", "♘", "♖"],
          [nil, nil, nil, nil, nil, nil, nil, nil],
          [nil, nil, nil, nil, nil, nil, nil, nil],
          [nil, nil, nil, nil, nil, nil, nil, nil],

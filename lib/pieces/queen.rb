@@ -3,7 +3,7 @@ require_relative "../movement.rb"
 require_relative "../board.rb"
 require_relative "../chess_set.rb"
 
-class Bishop
+class Queen
   attr_accessor :current_pos, :symbol, :id, :move_tree
 
   def initialize(id, parent, symbol, position)
@@ -20,6 +20,8 @@ class Bishop
     allowable = []
     possible_moves = []
     7.times do |n|
+      possible_moves << [x + (n + 1), y]
+      possible_moves << [x, y + (n + 1)]
       possible_moves << [x + (n + 1), y + (n + 1)]
       possible_moves << [x - (n + 1), y - (n + 1)]
     end
@@ -27,7 +29,7 @@ class Bishop
     return allowable
   end
 
-  def moves(dest = [1, 3], start = @current_pos)
+  def moves(dest, start = @current_pos)
     binding.pry
     node = @move_tree.populate_and_return(self, dest, @move_tree.root)
     #@move_tree.retrace_steps(start, node)
