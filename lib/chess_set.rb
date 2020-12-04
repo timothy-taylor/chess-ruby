@@ -33,7 +33,7 @@ module ChessSet
      row = 6
     end
     8.times do |n|
-      string = "#{str}_pwn_#{n}"
+      string = "#{str}_pwn_#{n+1}"
       ID[string] = [id_clr[:pawn], [row,n]]
     end
   end

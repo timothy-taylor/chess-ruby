@@ -1,4 +1,3 @@
-require 'pry'
 require_relative "../movement.rb"
 require_relative "../board.rb"
 require_relative "../chess_set.rb"
@@ -28,7 +27,6 @@ class Bishop
   end
 
   def moves(dest = [1, 3], start = @current_pos)
-    binding.pry
     node = @move_tree.populate_and_return(self, dest, @move_tree.root)
     #@move_tree.retrace_steps(start, node)
   end

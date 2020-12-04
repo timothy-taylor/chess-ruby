@@ -32,10 +32,6 @@ describe Board do
     end
   end
 
-#  describe "#initialize" do
-#    it "puts all necessary pieces into starting positions" do
-#      play = Board.new
-#      expect(play.board).to eql(
 #        [["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
 #         ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
 #         [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -44,8 +40,6 @@ describe Board do
 #         [nil, nil, nil, nil, nil, nil, nil, nil],
 #         ["♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎"],
 #         ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"]])
-#    end
-#  end
 end
 
 describe BlackSide do
@@ -54,8 +48,8 @@ describe BlackSide do
       play = Board.new
       play.black.create_pieces
       expect(play.board).to eql(
-        [["♖", "♘", "♗", "♕", nil, "♗", "♘", "♖"],
-         [nil, nil, nil, nil, nil, nil, nil, nil],
+        [["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
+         ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
          [nil, nil, nil, nil, nil, nil, nil, nil],
          [nil, nil, nil, nil, nil, nil, nil, nil],
          [nil, nil, nil, nil, nil, nil, nil, nil],
