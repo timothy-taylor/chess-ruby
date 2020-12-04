@@ -17,6 +17,21 @@ describe Board do
     end
   end
 
+  describe "#print_board" do
+    it "replaces nil values with squares" do
+      play = Board.new
+      expect(play.print_board).to eql(
+        [["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"]])
+    end
+  end
+
 #  describe "#initialize" do
 #    it "puts all necessary pieces into starting positions" do
 #      play = Board.new
@@ -34,13 +49,12 @@ describe Board do
 end
 
 describe BlackSide do
-  describe "#create_knight" do
-    it "creates the knight object and places its symbol in the array" do
+  describe "#create_pieces" do
+    it "creates the pieces and places symbols in the array" do
       play = Board.new
-      play.black.create_knight(self, "blk_kht_1")
-      play.black.create_knight(self, "blk_kht_2")
+      play.black.create_pieces
       expect(play.board).to eql(
-        [[nil, "♘", nil, nil, nil, nil, "♘", nil],
+        [["♖", "♘", "♗", nil, nil, "♗", "♘", "♖"],
          [nil, nil, nil, nil, nil, nil, nil, nil],
          [nil, nil, nil, nil, nil, nil, nil, nil],
          [nil, nil, nil, nil, nil, nil, nil, nil],

@@ -3,16 +3,17 @@ require_relative "../board.rb"
 require_relative "../chess_set.rb"
 
 class Knight
-  attr_accessor :current_pos, :symbol, :id
+  attr_accessor :current_pos, :symbol, :id, :move_tree
 
   def initialize(id, parent, symbol, position)
     @id = id
     @gameboard = parent
     @symbol = symbol
     @current_pos = position
+    @move_tree = Tree.new(position)
   end
 
-  def available_moves(position)
+  def available_moves(position = @current_pos)
     x = position[0]
     y = position[1]
     allowable = []
@@ -24,9 +25,8 @@ class Knight
     return allowable
   end
 
-  def knight_moves(finish, start = @current_pos)
-    move_tree = Tree.new(start)
-    node = move_tree.populate_and_return(self, finish, move_tree.root)
-    move_tree.retrace_steps(start, node)
+  def moves(finish, start = @current_pos)
+    node = @move_tree.populate_and_return(self, finish, @move_tree.root)
+    #@move_tree.retrace_steps(start, node)
   end
 end
