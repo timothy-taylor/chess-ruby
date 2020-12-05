@@ -20,6 +20,8 @@ class Pawn
     possible_moves = []
     first_move = true if pos == @move_tree.root.position
     possible_moves << basic_move_direction(@id, pos) 
+    possible_moves << diagonal_take_left(@id, pos) 
+    possible_moves << diagonal_take_right(@id, pos) 
     possible_moves << first_move_direction(@id, pos, first_move)
     possible_moves.each{ |e| allowable << e if @gameboard.allowable_move?(e) }
     return allowable
@@ -37,6 +39,18 @@ class Pawn
     y = position[1]
     id.start_with?("blk") ? [x + 2, y] : [x - 2, y]
   end
+
+  def diagonal_take_left(id, position)
+    x = position[0]
+    y = position[1]
+    id.start_with?("blk") ? [x + 1, y + 1] : [x - 1, y + 1]
+  end
+
+  def diagonal_take_right(id, position)
+    x = position[0]
+    y = position[1]
+    id.start_with?("blk") ? [x + 1, y - 1] : [x - 1, y - 1]
+  end 
 
   def moves(dest, start = @current_pos)
     binding.pry
