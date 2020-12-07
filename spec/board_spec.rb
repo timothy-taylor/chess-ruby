@@ -31,15 +31,6 @@ describe Board do
          ["■", "□", "■", "□", "■", "□", "■", "□"]])
     end
   end
-
-#        [["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
-#         ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
-#         [nil, nil, nil, nil, nil, nil, nil, nil],
-#         [nil, nil, nil, nil, nil, nil, nil, nil],
-#         [nil, nil, nil, nil, nil, nil, nil, nil],
-#         [nil, nil, nil, nil, nil, nil, nil, nil],
-#         ["♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎"],
-#         ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"]])
 end
 
 describe BlackSide do
@@ -47,15 +38,33 @@ describe BlackSide do
     it "creates the pieces and places symbols in the array" do
       play = Board.new
       play.black.create_pieces
-      expect(play.board).to eql(
+      expect(play.print_board).to eql(
         [["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
          ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
-         [nil, nil, nil, nil, nil, nil, nil, nil],
-         [nil, nil, nil, nil, nil, nil, nil, nil],
-         [nil, nil, nil, nil, nil, nil, nil, nil],
-         [nil, nil, nil, nil, nil, nil, nil, nil],
-         [nil, nil, nil, nil, nil, nil, nil, nil],
-         [nil, nil, nil, nil, nil, nil, nil, nil]])
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"]])
+    end
+  end
+end
+
+describe WhiteSide do
+  describe "#create_pieces" do
+    it "creates the pieces and places symbols in the array" do
+      play = Board.new
+      play.white.create_pieces
+      expect(play.print_board).to eql(
+        [["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["□", "■", "□", "■", "□", "■", "□", "■"],
+         ["■", "□", "■", "□", "■", "□", "■", "□"],
+         ["♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎", "♟︎"],
+         ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"]])
     end
   end
 end

@@ -15,10 +15,10 @@ class Pawn
   end
 
   def available_moves(pos = @current_pos)
-    first_move = false
+    first_move = true
     allowable = []
     possible_moves = []
-    first_move = true if pos == @move_tree.root.position
+    first_move = false unless pos == @move_tree.root.position
     possible_moves << basic_move_direction(@id, pos) 
     possible_moves << diagonal_take_left(@id, pos) 
     possible_moves << diagonal_take_right(@id, pos) 
