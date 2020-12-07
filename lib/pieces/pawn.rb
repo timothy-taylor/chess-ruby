@@ -53,7 +53,6 @@ class Pawn
   end 
 
   def moves(dest, start = @current_pos)
-    binding.pry
     node = @move_tree.populate_and_return(self, dest, @move_tree.root)
     #@move_tree.retrace_steps(start, node)
   end

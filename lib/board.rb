@@ -1,8 +1,8 @@
-
 # frozen_string_literal: true 
 
 require "pry"
-require "pp"
+require "tty-table"
+require "pastel"
 
 require_relative "chess_set.rb"
 require_relative "pieces/knight.rb"
@@ -27,14 +27,18 @@ class Board
     Array.new(8) {Array.new(8)}
   end 
 
- def print_board
+ def print_board(command = "print")
     array = @board.map { |row|
       row.map { |e| e.symbol unless e.nil? }
     }
     format = array.map.with_index { |row, i|
       row.map.with_index { |e, j| e || format_board(i, j) }
     }
-    pp format
+    if command == "print"
+      p format
+    else
+      render_array(format)
+    end
   end
 
   def format_board(row, element)
@@ -43,6 +47,17 @@ class Board
     elsif (row + element).odd?
       "■"
     end
+  end
+  
+  def render_array(array)
+    pastel = Pastel.new
+    table = TTY::Table.new(array)
+    puts table.render(:unicode, padding: [0,1]) { |renderer|
+      renderer.border.separator = :each_row
+      #renderer.filter = ->(val, row_index, col_index) do
+      #  col_index % 2 == 1 ? pastel.red.on_green(val) : val
+      #end
+    }
   end
   
   def create_black_side
