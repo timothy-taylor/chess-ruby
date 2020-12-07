@@ -3,14 +3,9 @@
 require "pry"
 require "tty-table"
 require "pastel"
+require "pp"
 
 require_relative "chess_set.rb"
-require_relative "pieces/knight.rb"
-require_relative "pieces/rook.rb"
-require_relative "pieces/bishop.rb"
-require_relative "pieces/queen.rb"
-require_relative "pieces/king.rb"
-require_relative "pieces/pawn.rb"
 
 class Board
   include ChessSet
@@ -29,37 +24,33 @@ class Board
 
  def print_board(command = "print")
     array = @board.map { |row|
-      row.map { |e| e.symbol unless e.nil? }
+      row.map { |element| element.symbol unless element.nil? }
     }
     format = array.map.with_index { |row, i|
-      row.map.with_index { |e, j| e || format_board(i, j) }
+      row.map.with_index { |e, j| e || add_squares(i, j) }
     }
     if command == "print"
-      p format
+      pp format
     else
       render_array(format)
     end
   end
 
-  def format_board(row, element)
-    if (row + element).even?
+  def add_squares(row, column)
+    if (row + column).even?
       "□"
-    elsif (row + element).odd?
+    elsif (row + column).odd?
       "■"
     end
   end
   
   def render_array(array)
-    pastel = Pastel.new
     table = TTY::Table.new(array)
     puts table.render(:unicode, padding: [0,1]) { |renderer|
       renderer.border.separator = :each_row
-      #renderer.filter = ->(val, row_index, col_index) do
-      #  col_index % 2 == 1 ? pastel.red.on_green(val) : val
-      #end
     }
   end
-  
+ 
   def create_black_side
     BlackSide.new(self)
   end
@@ -84,58 +75,9 @@ class BlackSide < Board
 
   def initialize(board)
     @parent = board
-    create_pawn_ids("black")    
-  end
-
-  def create_pieces
-    create_knight("blk_kht_1")
-    create_knight("blk_kht_2")
-    create_rook("blk_rok_1")
-    create_rook("blk_rok_2") 
-    create_bishop("blk_bsh_1")
-    create_bishop("blk_bsh_2")
-    create_queen("blk_que_1")
-    create_king("blk_kng_1")
-    8.times do |n| 
-      id = "blk_pwn_#{n+1}"
-      create_pawn(id)
-    end
-  end
-
-  def create_knight(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Knight.new(id, @parent, sym, pos)
-  end
-
-  def create_rook(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Rook.new(id, @parent, sym, pos)
-  end
-
-  def create_bishop(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Bishop.new(id, @parent, sym, pos)
-  end
-
-  def create_king(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = King.new(id, @parent, sym, pos)
-  end
-
-  def create_queen(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Queen.new(id, @parent, sym, pos)
-  end
-
-  def create_pawn(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Pawn.new(id, @parent, sym, pos)
+    create_pawn_ids("black")
+    black_keys = ID.keys.map { |e| e if e.start_with?("blk") }
+    create_side(black_keys.compact, @parent)
   end
 end
 
@@ -144,57 +86,8 @@ class WhiteSide < Board
 
   def initialize(board)
     @parent = board
-    create_pawn_ids("white")    
-  end
-
-  def create_pieces
-    create_knight("wht_kht_1")
-    create_knight("wht_kht_2")
-    create_rook("wht_rok_1")
-    create_rook("wht_rok_2") 
-    create_bishop("wht_bsh_1")
-    create_bishop("wht_bsh_2")
-    create_queen("wht_que_1")
-    create_king("wht_kng_1")
-    8.times do |n| 
-      id = "wht_pwn_#{n+1}"
-      create_pawn(id)
-    end
-  end
-
-  def create_knight(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Knight.new(id, @parent, sym, pos)
-  end
-
-  def create_rook(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Rook.new(id, @parent, sym, pos)
-  end
-
-  def create_bishop(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Bishop.new(id, @parent, sym, pos)
-  end
-
-  def create_king(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = King.new(id, @parent, sym, pos)
-  end
-
-  def create_queen(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Queen.new(id, @parent, sym, pos)
-  end
-
-  def create_pawn(id)
-    sym = ID[id][0]
-    pos = ID[id][1]
-    @parent.board[pos[0]][pos[1]] = Pawn.new(id, @parent, sym, pos)
+    create_pawn_ids("white")
+    white_keys = ID.keys.map { |e| e if e.start_with?("wht") }
+    create_side(white_keys.compact, @parent)
   end
 end

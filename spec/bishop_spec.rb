@@ -1,13 +1,17 @@
+require './lib/chess_set.rb'
 require './lib/board.rb'
 require './lib/movement.rb'
 require './lib/pieces/bishop.rb'
 
 describe Bishop do
+  def set_up
+      play = Board.new
+      create_piece("blk_bsh_1")
+  end
+
   describe "#available_moves" do
     it "checks to see what legal moves the bishop has" do
-      play = Board.new
-      black = play.create_black_side
-      bishop = black.create_bishop("blk_bsh_1")
+      bishop = set_up    
       expect(bishop.available_moves).to eql(
         [[1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [6, 8]])
     end
@@ -15,9 +19,7 @@ describe Bishop do
 
   describe "#moves" do
     it "creates a new node in the bishop move_tree" do
-      play = Board.new
-      black = play.create_black_side
-      bishop = black.create_bishop("blk_bsh_1")
+      bishop = set_up 
       expect(bishop.moves([1, 3])).to be_an_instance_of(Node)
     end
   end
