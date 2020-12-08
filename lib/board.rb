@@ -65,7 +65,6 @@ class Board
   end
 
   def allowable_move?(pos)
-    binding.pry
     if pos[0] < 0 || pos[1] < 0
       false
     elsif pos[0] > 8 || pos[1] > 8

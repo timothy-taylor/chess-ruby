@@ -28,7 +28,7 @@ class Rook
   end
 
   def moves(finish, start = @current_pos)
-    node = @move_tree.populate_and_return(self, finish, @move_tree.root)
+    node = @move_tree.populate_and_return(self, finish)
     #@move_tree.retrace_steps(start, node)
   end
 end

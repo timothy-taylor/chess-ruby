@@ -1,3 +1,5 @@
+require 'pry'
+
 class Node
   attr_accessor :position, :previous
 
@@ -8,20 +10,21 @@ class Node
 end
 
 class Tree
-  attr_accessor :root
+  attr_accessor :root, :current
 
   def initialize(position)
     @root = Node.new(position, nil)
+    @current = @root
   end
 
-  def populate_and_return(piece, finish_position, root)
-    queue = [root]
-    until queue[0].position == finish_position
-      parent_node = queue.shift
-      moves = piece.available_moves(parent_node.position)
-      moves.each { |move| queue.push(Node.new(move, parent_node)) }
-    end
-    return queue[0]
+  def populate_and_return(piece, finish_pos)
+    moves = piece.available_moves
+    moves.each { |move|
+      if move == finish_pos
+        piece.move_tree.current = Node.new(move, piece.move_tree.current)
+      end
+    }
+    return piece.move_tree.current
   end
 
   def retrace_steps(start_position, node, queue = [])

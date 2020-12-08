@@ -1,4 +1,5 @@
 require 'pry'
+
 require_relative "../movement.rb"
 require_relative "../board.rb"
 require_relative "../chess_set.rb"
@@ -24,8 +25,9 @@ class Pawn
     possible_moves << diagonal_take_left(@id, pos) 
     possible_moves << diagonal_take_right(@id, pos) 
     possible_moves << first_move_direction(@id, pos, first_move)
-    binding.pry
-    possible_moves.each{ |e| allowable << e if @gameboard.allowable_move?(e) }
+    possible_moves.each{ |e| 
+      allowable << e if @gameboard.allowable_move?(e) 
+    }
     return allowable
   end
 
@@ -55,7 +57,7 @@ class Pawn
   end 
 
   def moves(dest, start = @current_pos)
-    node = @move_tree.populate_and_return(self, dest, @move_tree.root)
+    node = @move_tree.populate_and_return(self, dest)
     #@move_tree.retrace_steps(start, node)
   end
 end

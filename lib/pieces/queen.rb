@@ -30,7 +30,7 @@ class Queen
   end
 
   def moves(dest, start = @current_pos)
-    node = @move_tree.populate_and_return(self, dest, @move_tree.root)
+    node = @move_tree.populate_and_return(self, dest)
     #@move_tree.retrace_steps(start, node)
   end
 end
