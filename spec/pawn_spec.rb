@@ -6,8 +6,9 @@ require './lib/pieces/pawn.rb'
 describe Pawn do
   def set_up(id)
     play = Board.new
-    black = play.create_black_side
-    black.create_piece(id, Pawn)
+    play.board.flatten.each{ |e|
+      return e if e.id == id
+    }
   end
 
   describe "#available_moves" do

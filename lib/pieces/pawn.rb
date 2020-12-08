@@ -4,7 +4,8 @@ require_relative "../board.rb"
 require_relative "../chess_set.rb"
 
 class Pawn
-  attr_accessor :current_pos, :symbol, :id, :move_tree
+  attr_reader :symbol, :id, :move_tree
+  attr_accessor :current_pos
 
   def initialize(id, parent, symbol, position)
     @id = id
@@ -23,6 +24,7 @@ class Pawn
     possible_moves << diagonal_take_left(@id, pos) 
     possible_moves << diagonal_take_right(@id, pos) 
     possible_moves << first_move_direction(@id, pos, first_move)
+    binding.pry
     possible_moves.each{ |e| allowable << e if @gameboard.allowable_move?(e) }
     return allowable
   end

@@ -5,8 +5,9 @@ require './lib/pieces/queen.rb'
 describe Queen do
   def set_up
    play = Board.new
-   black = play.create_black_side
-   black.create_piece("blk_que_1", Queen)
+   play.board.flatten.each { |e|
+     return e if e.id == "blk_que_1"
+   }
   end
 
   describe "#available_moves" do

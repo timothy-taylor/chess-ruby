@@ -5,8 +5,9 @@ require './lib/pieces/rook.rb'
 describe Rook do
   def set_up
    play = Board.new
-   black = play.create_black_side
-   black.create_piece("blk_rok_1", Rook)
+   play.board.flatten.each{ |e|
+     return e if e.id == "blk_rok_1"
+   }
   end
 
   describe "#available_moves" do

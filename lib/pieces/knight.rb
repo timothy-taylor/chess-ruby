@@ -3,7 +3,8 @@ require_relative "../board.rb"
 require_relative "../chess_set.rb"
 
 class Knight
-  attr_accessor :current_pos, :symbol, :id, :move_tree
+  attr_reader :symbol, :id, :move_tree
+  attr_accessor :current_pos
 
   def initialize(id, parent, symbol, position)
     @id = id

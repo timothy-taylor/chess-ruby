@@ -10,7 +10,7 @@ require_relative "chess_set.rb"
 class Board
   include ChessSet
 
-  attr_accessor :board, :black, :white
+  attr_accessor :board
 
   def initialize
     @board = make_board
@@ -29,6 +29,11 @@ class Board
     format = array.map.with_index { |row, i|
       row.map.with_index { |e, j| e || add_squares(i, j) }
     }
+    p format.each_with_index { |row, i|
+      array = ('a'..'h').to_a.reverse
+      row.unshift(array[i])
+    }
+    p format << ['-',1,2,3,4,5,6,7,8] 
     if command == "print"
       pp format
     else
@@ -38,9 +43,9 @@ class Board
 
   def add_squares(row, column)
     if (row + column).even?
-      "□"
+      "■" 
     elsif (row + column).odd?
-      "■"
+      "□"
     end
   end
   
@@ -60,6 +65,7 @@ class Board
   end
 
   def allowable_move?(pos)
+    binding.pry
     if pos[0] < 0 || pos[1] < 0
       false
     elsif pos[0] > 8 || pos[1] > 8

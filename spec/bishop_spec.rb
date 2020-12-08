@@ -1,12 +1,13 @@
-require './lib/chess_set.rb'
 require './lib/board.rb'
 require './lib/movement.rb'
 require './lib/pieces/bishop.rb'
 
 describe Bishop do
   def set_up
-      play = Board.new
-      create_piece("blk_bsh_1")
+    play = Board.new
+    play.board.flatten.each { |e| 
+      return e if e.id == "blk_bsh_1" 
+    }
   end
 
   describe "#available_moves" do
