@@ -10,9 +10,10 @@ require_relative "chess_set.rb"
 class Board
   include ChessSet
 
-  attr_accessor :board
+  attr_accessor :board, :game_over
 
   def initialize
+    @game_over = false
     @board = make_board
     @black = create_black_side
     @white = create_white_side
@@ -22,22 +23,24 @@ class Board
     Array.new(8) {Array.new(8)}
   end 
 
- def print_board(command = "print")
+ def print_board(command = "print", highlights = [], piece_pos = [])
     array = @board.map { |row|
       row.map { |element| element.symbol unless element.nil? }
     }
     format = array.map.with_index { |row, i|
       row.map.with_index { |e, j| e || add_squares(i, j) }
     }
-    p format.each_with_index { |row, i|
-      array = ('a'..'h').to_a.reverse
+    format.each_with_index { |row, i|
+      array = (1..8).to_a.reverse
       row.unshift(array[i])
     }
-    p format << ['-',1,2,3,4,5,6,7,8] 
+    format << ('a'..'h').to_a.unshift("-")
     if command == "print"
       pp format
     else
-      render_array(format)
+      system("clear") || system("cls")
+      p highlights
+      render_array(format, highlights, piece_pos)
     end
   end
 
@@ -49,10 +52,20 @@ class Board
     end
   end
   
-  def render_array(array)
+  def render_array(array, highlights, pos)
+    pos_col = pos[1] + 1 unless pos.empty?
+    pos_row = pos[0]
+    pastel = Pastel.new
     table = TTY::Table.new(array)
     puts table.render(:unicode, padding: [0,1]) { |renderer|
       renderer.border.separator = :each_row
+      renderer.filter = ->(val, row, col) do
+        if col == pos_col && row == pos_row
+          pastel.red(val)
+        else
+          val
+        end
+      end 
     }
   end
  
