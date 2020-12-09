@@ -24,27 +24,38 @@ class Board
   end 
 
  def print_board(command = "print", highlights = [], piece_pos = [])
-    array = @board.map { |row|
-      row.map { |element| element.symbol unless element.nil? }
-    }
-    format = array.map.with_index { |row, i|
-      row.map.with_index { |e, j| e || add_squares(i, j) }
-    }
-    format.each_with_index { |row, i|
-      array = (1..8).to_a.reverse
-      row.unshift(array[i])
-    }
-    format << ('a'..'h').to_a.unshift("-")
+    symbol_array = add_symbols(@board) 
+    squares_array = add_squares(symbol_array)
+    format_array = add_labels(squares_array)
     if command == "print"
-      pp format
+      pp format_array
     else
       system("clear") || system("cls")
-      p highlights
-      render_array(format, highlights, piece_pos)
+      render_array(format_array, highlights, piece_pos)
     end
   end
 
-  def add_squares(row, column)
+  def add_symbols(array)
+    array.map { |row|
+      row.map { |element| element.symbol unless element.nil? }
+    }
+  end
+
+  def add_labels(array)
+    numbers = array.each_with_index { |row, i|
+      numbers = (1..8).to_a.reverse
+      row.unshift(numbers[i])
+    }
+    numbers << ('a'..'h').to_a.unshift("-")
+  end
+
+  def add_squares(array)
+    array.map.with_index { |row, i|
+      row.map.with_index { |e, j| e || black_or_white?(i, j) }
+    }
+  end
+
+  def black_or_white?(row, column)
     if (row + column).even?
       "■" 
     elsif (row + column).odd?
@@ -60,12 +71,18 @@ class Board
     puts table.render(:unicode, padding: [0,1]) { |renderer|
       renderer.border.separator = :each_row
       renderer.filter = ->(val, row, col) do
-        if col == pos_col && row == pos_row
-          pastel.red(val)
-        else
-          val
-        end
-      end 
+        ( col == pos_col && row == pos_row ) ? pastel.red(val) : val
+      end
+     # renderer.filter = ->(val, row, col) do
+     #   until highlights.empty? || highlights.nil?
+     #     element = hightlights.shift
+     #     e_col = element[1]
+     #     e_row = element[0]
+     #     if col == e_col && row == e_row
+     #       pastel.red(val)
+     #     end
+     #   end
+     # end
     }
   end
  
@@ -77,15 +94,22 @@ class Board
     WhiteSide.new(self)
   end
 
-  def allowable_move?(pos)
+  def allowable_move?(pos, piece)
+    space = @board[pos[0]][pos[1]]
     if pos[0] < 0 || pos[1] < 0
       false
     elsif pos[0] > 8 || pos[1] > 8
       false
+    elsif space != nil
+      same_team?(space, piece) ? false : true
     else
       true
     end
   end  
+
+  def same_team?(piece_one, piece_two)
+    piece_one.id.chr == piece_two.id.chr ? true : false
+  end
 end
 
 class BlackSide < Board

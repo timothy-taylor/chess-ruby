@@ -2,7 +2,7 @@ require 'pry'
 
 require_relative "board.rb"
 
-class InputOutput
+class Interface
   attr_accessor :play
 
   DECODE = { "a" => 0, "b" => 1, "c" => 2, "d" => 3, "e" => 4,
@@ -50,7 +50,7 @@ class InputOutput
   end
 end
 
-class Turn < InputOutput
+class Turn < Interface 
   attr_accessor :piece, :player
 
   def initialize(parent, player)
@@ -64,6 +64,10 @@ class Turn < InputOutput
   end
 
   def print_available_moves
+    @parent.play.print_board("render",
+                             @piece.available_moves,
+                             @piece.current_pos)
+    encoded_moves = []
     @piece.available_moves.map { |each|
       encoded_moves << encode(each)
     }
@@ -95,6 +99,12 @@ class Turn < InputOutput
   end
 end
 
-start = InputOutput.new
-start.render
-start.new_turn
+class Start
+  def initialize
+    start = Interface.new
+    start.render
+    start.new_turn
+  end
+end
+
+Start.new

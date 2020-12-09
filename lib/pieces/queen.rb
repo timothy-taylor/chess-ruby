@@ -25,7 +25,9 @@ class Queen
       possible_moves << [x + (n + 1), y + (n + 1)]
       possible_moves << [x - (n + 1), y - (n + 1)]
     end
-    possible_moves.each{ |e| allowable << e if @gameboard.allowable_move?(e) }
+    possible_moves.each{ |e| 
+      allowable << e if @gameboard.allowable_move?(e, self) 
+    }
     return allowable
   end
 

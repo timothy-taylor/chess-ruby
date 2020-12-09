@@ -26,7 +26,7 @@ class Pawn
     possible_moves << diagonal_take_right(@id, pos) 
     possible_moves << first_move_direction(@id, pos, first_move)
     possible_moves.each{ |e| 
-      allowable << e if @gameboard.allowable_move?(e) 
+      allowable << e if @gameboard.allowable_move?(e, self) 
     }
     return allowable
   end
