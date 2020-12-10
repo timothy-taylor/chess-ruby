@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pry'
 
 class Node
@@ -19,23 +21,9 @@ class Tree
 
   def populate_and_return(piece, finish_pos)
     moves = piece.available_moves
-    moves.each { |move|
-      if move == finish_pos
-        piece.move_tree.current = Node.new(move, piece.move_tree.current)
-      end
-    }
-    return piece.move_tree.current
-  end
-
-  def retrace_steps(start_position, node, queue = [])
-    position = node.position
-    steps = 0
-    until node == @root
-      steps += 1
-      queue.unshift(node)
-      node = node.previous
+    moves.each do |move|
+      piece.move_tree.current = Node.new(move, piece.move_tree.current) if move == finish_pos
     end
-    puts "You found #{position} after #{steps} moves. From #{start_position}:"
-    queue.each { |node| p node.position }
+    piece.move_tree.current
   end
 end

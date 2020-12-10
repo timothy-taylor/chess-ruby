@@ -1,6 +1,8 @@
-require_relative "../movement.rb"
-require_relative "../board.rb"
-require_relative "../chess_set.rb"
+# frozen_string_literal: true
+
+require_relative '../movement'
+require_relative '../board'
+require_relative '../chess_set'
 
 class Rook
   attr_reader :symbol, :id, :move_tree
@@ -23,12 +25,13 @@ class Rook
       possible_moves << [x + (n + 1), y]
       possible_moves << [x, y + (n + 1)]
     end
-    possible_moves.each{ |e| allowable << e if @gameboard.allowable_move?(e) }
-    return allowable
+    possible_moves.each do |e|
+      allowable << e if @gameboard.allowable_move?(e, self)
+    end
+    allowable
   end
 
-  def moves(finish, start = @current_pos)
-    node = @move_tree.populate_and_return(self, finish)
-    #@move_tree.retrace_steps(start, node)
+  def moves(finish)
+    @move_tree.populate_and_return(self, finish)
   end
 end

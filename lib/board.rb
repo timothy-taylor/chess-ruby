@@ -1,11 +1,12 @@
-# frozen_string_literal: true 
+# frozen_string_literal: true
 
-require "pry"
-require "pp"
+require 'pry'
+require 'pp'
 
-require_relative "chess_set.rb"
-require_relative "board_utilities.rb"
+require_relative 'chess_set'
+require_relative 'board_utilities'
 
+# creates, populates, and prints the board
 class Board
   include ChessSet
   include BoardUtilities
@@ -20,21 +21,21 @@ class Board
   end
 
   def make_board
-    Array.new(8) {Array.new(8)}
-  end 
+    Array.new(8) { Array.new(8) }
+  end
 
- def print_board(command = "print", highlights = [], piece_pos = [])
-    symbol_array = add_symbols(@board) 
+  def print_board(command = 'print', highlights = [], piece_pos = [])
+    symbol_array = add_symbols(@board)
     squares_array = add_squares(symbol_array)
     format_array = add_labels(squares_array)
-    if command == "print" # this is just for testing
+    if command == 'print' # this is just for testing
       pp format_array
     else
-      system("clear") || system("cls")
+      system('clear') || system('cls')
       render_array(format_array, highlights, piece_pos)
     end
   end
-  
+
   def create_black_side
     BlackSide.new(self)
   end
@@ -44,33 +45,40 @@ class Board
   end
 
   def allowable_move?(pos, piece)
-    space = @board[pos[0]][pos[1]]
-    if space.nil?
-      outside_board?(pos) ? false : true 
-    else
-      same_team?(space, piece) ? false : true
+    begin
+      space = @board[pos[0]][pos[1]]
+    rescue
+      space = nil
+    ensure
+      if space.nil?
+        outside_board?(pos) ? false : true
+      else
+        same_team?(space, piece) ? false : true
+      end
     end
   end
 end
 
+# create black pawn ids, instances of the black pieces, populate the board
 class BlackSide < Board
   include ChessSet
 
   def initialize(board)
     @parent = board
-    create_pawn_ids("black")
-    black_keys = ID.keys.map { |e| e if e.start_with?("blk") }
+    create_pawn_ids('black')
+    black_keys = ID.keys.map { |e| e if e.start_with?('blk') }
     create_side(black_keys.compact, @parent)
   end
 end
 
+# create white pawn ids, instances of white pieces, populate the board
 class WhiteSide < Board
   include ChessSet
 
   def initialize(board)
     @parent = board
-    create_pawn_ids("white")
-    white_keys = ID.keys.map { |e| e if e.start_with?("wht") }
+    create_pawn_ids('white')
+    white_keys = ID.keys.map { |e| e if e.start_with?('wht') }
     create_side(white_keys.compact, @parent)
   end
 end

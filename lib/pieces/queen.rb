@@ -1,6 +1,8 @@
-require_relative "../movement.rb"
-require_relative "../board.rb"
-require_relative "../chess_set.rb"
+# frozen_string_literal: true
+
+require_relative '../movement'
+require_relative '../board'
+require_relative '../chess_set'
 
 class Queen
   attr_reader :symbol, :id, :move_tree
@@ -25,14 +27,13 @@ class Queen
       possible_moves << [x + (n + 1), y + (n + 1)]
       possible_moves << [x - (n + 1), y - (n + 1)]
     end
-    possible_moves.each{ |e| 
-      allowable << e if @gameboard.allowable_move?(e, self) 
-    }
-    return allowable
+    possible_moves.each do |e|
+      allowable << e if @gameboard.allowable_move?(e, self)
+    end
+    allowable
   end
 
-  def moves(dest, start = @current_pos)
-    node = @move_tree.populate_and_return(self, dest)
-    #@move_tree.retrace_steps(start, node)
+  def moves(dest)
+    @move_tree.populate_and_return(self, dest)
   end
 end
