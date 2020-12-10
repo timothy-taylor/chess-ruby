@@ -45,17 +45,9 @@ class Board
   end
 
   def allowable_move?(pos, piece)
-    begin
-      space = @board[pos[0]][pos[1]]
-    rescue
-      space = nil
-    ensure
-      if space.nil?
-        outside_board?(pos) ? false : true
-      else
-        same_team?(space, piece) ? false : true
-      end
-    end
+    return outside_board?(pos) ? false : true if @board[pos[0]][pos[1]].nil?
+    occupied_space = @board[pos[0]][pos[1]]
+    same_team?(occupied_space, piece) ? false : true
   end
 end
 

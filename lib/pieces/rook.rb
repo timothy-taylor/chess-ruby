@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pry'
+
 require_relative '../movement'
 require_relative '../board'
 require_relative '../chess_set'
@@ -21,12 +23,24 @@ class Rook
     y = position[1]
     allowable = []
     possible_moves = []
-    7.times do |n|
+
+    n = 0
+    legal_move = true
+    while legal_move do
       possible_moves << [x + (n + 1), y]
-      possible_moves << [x, y + (n + 1)]
+      move = possible_moves[n]
+      n += 1
+      legal_move = @gameboard.allowable_move?(move, self)
+      allowable << move if @gameboard.allowable_move?(move, self)
     end
-    possible_moves.each do |e|
-      allowable << e if @gameboard.allowable_move?(e, self)
+    n = 0
+    legal_move = true
+    while legal_move do
+      possible_moves << [x, y + (n + 1)]
+      move = possible_moves[n]
+      n += 1
+      legal_move = @gameboard.allowable_move?(move, self)
+      allowable << move if @gameboard.allowable_move?(move, self)
     end
     allowable
   end
