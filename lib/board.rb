@@ -24,15 +24,15 @@ class Board
     Array.new(8) { Array.new(8) }
   end
 
-  def print_board(command = 'print', highlights = [], piece_pos = [])
+  def print_board(command = 'print', available_moves = [], piece_pos = [])
     symbol_array = add_symbols(@board)
-    squares_array = add_squares(symbol_array)
+    squares_array = add_squares(symbol_array, available_moves)
     format_array = add_labels(squares_array)
     if command == 'print' # this is just for testing
       pp format_array
     else
       system('clear') || system('cls')
-      render_array(format_array, highlights, piece_pos)
+      render_array(format_array, piece_pos)
     end
   end
 

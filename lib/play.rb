@@ -59,9 +59,12 @@ class Turn < Interface
     @parent = parent
     @@board = parent.play.board
     @input = ask_for_move
+    return if @parent.play.game_over
     puts @piece = find_piece_on_board(@input)
-    puts "#{@piece.current_pos} = #{encode(@piece.current_pos)}"
+    puts "log: #{@piece.current_pos} = #{encode(@piece.current_pos)}"
     print_available_moves
+    @destination = ask_for_move_2
+    make_move(@destination)
   end
 
   def print_available_moves
@@ -72,13 +75,43 @@ class Turn < Interface
     @piece.available_moves.map do |each|
       encoded_moves << encode(each)
     end
-    print 'Available moves: '
-    p encoded_moves
+    if encoded_moves.empty?
+      puts "That piece has no legal moves"
+      @input = ask_for_move
+      @piece = find_piece_on_board(@input)
+      print_available_moves
+    else
+      print 'Available moves: '
+      p encoded_moves
+    end
   end
 
-  def ask_for_move
+   def ask_for_move
     print "#{@player}: Please enter the coordinate of the piece you'd like to move: "
+    return @parent.play.game_over = true if gets.chomp == 'exit'
+    move = decode(gets.chomp)
+    move[0].nil? || move[1].nil? ? ask_for_move : move
+  end
+
+   def ask_for_move_2
+    print "#{@player}: Please enter the coordinates of where you'd like to move to: "
     decode(gets.chomp)
+  end
+
+  def make_move(destination)
+    if @piece.available_moves.include?(destination)
+      @piece.current_pos = destination
+      @@board[@input[0]][@input[1]] = nil
+      @@board[destination[0]][destination[1]] = @piece
+      @parent.play.print_board('render')
+    else
+      illegal_move
+    end
+  end
+
+  def illegal_move
+    puts "{@player}: That move isn't legal!"
+    make_move(ask_for_move_2)
   end
 
   def find_piece_on_board(array)
@@ -104,7 +137,7 @@ class Start
   def initialize
     start = Interface.new
     start.render
-    start.new_turn
+    start.game
   end
 end
 

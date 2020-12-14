@@ -5,7 +5,7 @@ require 'pastel'
 
 # provides the utilities that the board.rb file uses for its methods
 module BoardUtilities
-  def render_array(array, _highlights, pos)
+  def render_array(array, pos)
     pos_col = pos[1] + 1 unless pos.empty?
     pos_row = pos[0]
     pastel = Pastel.new
@@ -32,17 +32,17 @@ module BoardUtilities
     numbers << ('a'..'h').to_a.reverse.unshift('-')
   end
 
-  def add_squares(array)
+  def add_squares(array, moves)
     array.map.with_index do |row, i|
-      row.map.with_index { |e, j| e || black_or_white?(i, j) }
+      row.map.with_index { |e, j| e || black_or_white?(i, j, moves) }
     end
   end
 
-  def black_or_white?(row, column)
+  def black_or_white?(row, column, moves)
     if (row + column).even?
-      '■'
+      '■' if moves.include?([row, column])
     elsif (row + column).odd?
-      '□'
+      '□' if moves.include?([row, column])
     end
   end
 
