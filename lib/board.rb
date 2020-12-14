@@ -43,6 +43,27 @@ class Board
   def create_white_side
     WhiteSide.new(self)
   end
+ 
+  def move_key(x, y, key, n)
+    case key
+    when 'left'
+      [x, y - (n + 1)]
+    when 'right'
+      [x, y + (n + 1)]
+    when 'down'
+      [x + (n + 1), y]
+    when 'up'
+      [x - (n + 1), y]
+    when 'upleft'
+      [x - (n + 1), y - (n + 1)]
+    when 'upright'
+      [x - (n + 1), y + (n + 1)]
+    when 'downleft'
+      [x + (n + 1), y - (n + 1)]
+    when 'downright'
+      [x + (n + 1), y + (n + 1)]
+    end
+  end
 
   def allowable_move?(pos, piece)
     return outside_board?(pos) ? false : true if outside_board?(pos)

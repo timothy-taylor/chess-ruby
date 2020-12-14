@@ -22,27 +22,22 @@ class Rook
     x = position[0]
     y = position[1]
     allowable = []
-    possible_moves = []
-
-    n = 0
-    legal_move = true
-    while legal_move do
-      possible_moves << [x + (n + 1), y]
-      move = possible_moves[n]
-      n += 1
-      legal_move = @gameboard.allowable_move?(move, self)
-      allowable << move if @gameboard.allowable_move?(move, self)
-    end
-    n = 0
-    legal_move = true
-    while legal_move do
-      possible_moves << [x, y + (n + 1)]
-      move = possible_moves[n]
-      n += 1
-      legal_move = @gameboard.allowable_move?(move, self)
-      allowable << move if @gameboard.allowable_move?(move, self)
-    end
+    legal_move(x, y, allowable, 'down')
+    legal_move(x, y, allowable, 'right')
+    legal_move(x, y, allowable, 'up')
+    legal_move(x, y, allowable, 'left')
     allowable
+  end
+
+  def legal_move(x, y, array, key)
+    n = 0
+    legal_move = true
+    while legal_move do
+      move = @gameboard.move_key(x, y, key, n) 
+      n += 1
+      legal_move = @gameboard.allowable_move?(move, self)
+      array << move if @gameboard.allowable_move?(move, self)
+    end
   end
 
   def moves(finish)

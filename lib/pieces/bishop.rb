@@ -20,17 +20,24 @@ class Bishop
     x = position[0]
     y = position[1]
     allowable = []
-    possible_moves = []
-    7.times do |n|
-      possible_moves << [x + (n + 1), y + (n + 1)]
-      possible_moves << [x - (n + 1), y - (n + 1)]
-    end
-    possible_moves.each do |e|
-      allowable << e if @gameboard.allowable_move?(e, self)
-    end
+    legal_move(x, y, allowable, 'upright')
+    legal_move(x, y, allowable, 'upleft')
+    legal_move(x, y, allowable, 'downright')
+    legal_move(x, y, allowable, 'downleft')
     allowable
   end
 
+  def legal_move(x, y, array, key)
+    n = 0
+    legal_move = true
+    while legal_move do
+      move = @gameboard.move_key(x, y, key, n)
+      n += 1
+      legal_move = @gameboard.allowable_move?(move, self)
+      array << move if @gameboard.allowable_move?(move, self)
+    end
+  end
+  
   def moves(dest)
     @move_tree.populate_and_return(self, dest)
   end
