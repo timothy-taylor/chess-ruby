@@ -49,7 +49,7 @@ module BoardUtilities
   def outside_board?(pos)
     if (pos[0]).negative? || (pos[1]).negative?
       true
-    elsif pos[0] > 8 || pos[1] > 8
+    elsif pos[0] >= 8 || pos[1] >= 8
       true
     else
       false
