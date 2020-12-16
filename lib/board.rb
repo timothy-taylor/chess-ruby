@@ -11,7 +11,7 @@ class Board
   include ChessSet
   include BoardUtilities
 
-  attr_accessor :board, :game_over
+  attr_accessor :board, :game_over 
 
   def initialize
     @game_over = false
@@ -66,13 +66,19 @@ class Board
   end
 
   def allowable_move?(pos, piece)
+    return nil if pos.nil?
     return outside_board?(pos) ? false : true if outside_board?(pos)
     if @board[pos[0]][pos[1]].nil?
+      return pawn_move(pos, piece) if piece.id.include? 'pwn'
       true
     else
-      occupied_space = @board[pos[0]][pos[1]]
-      same_team?(occupied_space, piece) ? false : true
+      occupied = @board[pos[0]][pos[1]]
+      return pawn_attack(pos, piece, occupied) if piece.id.include? 'pwn'
+      same_team?(occupied, piece) ? false : true
     end
+    # stop moves after a legal attack
+    # king side and queen side castling
+    # check status for the king
   end
 end
 

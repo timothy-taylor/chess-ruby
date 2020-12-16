@@ -45,7 +45,7 @@ module BoardUtilities
       '□' if moves.include?([row, column])
     end
   end
-
+  
   def outside_board?(pos)
     if (pos[0]).negative? || (pos[1]).negative?
       true
@@ -57,6 +57,16 @@ module BoardUtilities
   end
 
   def same_team?(piece_one, piece_two)
-    piece_one.id.chr == piece_two.id.chr
+   piece_one.id.chr == piece_two.id.chr
+  end
+
+  def pawn_move(pos, piece)
+    pos[1] == piece.current_pos[1] ? true : false
+  end
+
+  def pawn_attack(pos, piece, space)
+    return false if pos[1] == piece.current_pos[1]  
+    return false if piece.id.chr == space.id.chr
+    true
   end
 end

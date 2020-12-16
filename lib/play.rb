@@ -88,8 +88,10 @@ class Turn < Interface
 
    def ask_for_move
     print "#{@player}: Please enter the coordinate of the piece you'd like to move: "
-    return @parent.play.game_over = true if gets.chomp == 'exit'
-    move = decode(gets.chomp)
+    input = gets.chomp
+    return @parent.play.game_over = true if input == 'exit'
+    puts "type 'exit' to quit, 'save' to save, coordinates are letter+number (ie a6)" if input == 'help'
+    move = decode(input)
     move[0].nil? || move[1].nil? ? ask_for_move : move
   end
 
@@ -110,7 +112,7 @@ class Turn < Interface
   end
 
   def illegal_move
-    puts "{@player}: That move isn't legal!"
+    puts "#{@player}: That move isn't legal!"
     make_move(ask_for_move_2)
   end
 
