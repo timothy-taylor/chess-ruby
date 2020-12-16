@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'pry'
-require 'pp'
 
 require_relative 'chess_set'
 require_relative 'board_utilities'
@@ -29,7 +28,7 @@ class Board
     squares_array = add_squares(symbol_array, available_moves)
     format_array = add_labels(squares_array)
     if command == 'print' # this is just for testing
-      pp format_array
+      p format_array
     else
       system('clear') || system('cls')
       render_array(format_array, piece_pos)
@@ -67,18 +66,24 @@ class Board
 
   def allowable_move?(pos, piece)
     return nil if pos.nil?
-    return outside_board?(pos) ? false : true if outside_board?(pos)
-    if @board[pos[0]][pos[1]].nil?
+    return false if outside_board?(pos)
+    occupied = @board[pos[0]][pos[1]]
+    if occupied.nil?
       return pawn_move(pos, piece) if piece.id.include? 'pwn'
       true
     else
-      occupied = @board[pos[0]][pos[1]]
       return pawn_attack(pos, piece, occupied) if piece.id.include? 'pwn'
       same_team?(occupied, piece) ? false : true
     end
     # stop moves after a legal attack
     # king side and queen side castling
     # check status for the king
+  end
+
+  def continue_checking_moves?(pos, piece)
+    return false if pos.nil?
+    return false if outside_board?(pos)
+    @board[pos[0]][pos[1]].nil? ? true : false
   end
 end
 

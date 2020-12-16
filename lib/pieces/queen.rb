@@ -37,9 +37,10 @@ class Queen
     while legal_move do
       move = @gameboard.move_key(x, y, key, n)
       n += 1
-      legal_move = @gameboard.allowable_move?(move, self)
       array << move if @gameboard.allowable_move?(move, self)
+      legal_move = @gameboard.continue_checking_moves?(move, self)
     end
+    array
   end
 
   def moves(dest)
