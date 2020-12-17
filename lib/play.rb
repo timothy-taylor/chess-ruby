@@ -60,11 +60,37 @@ class Turn < Interface
     @@board = parent.play.board
     @input = ask_for_move
     return if @parent.play.game_over
-    puts @piece = find_piece_on_board(@input)
-    puts "log: #{@piece.current_pos} = #{encode(@piece.current_pos)}"
+    @piece = find_piece_on_board(@input)
     print_available_moves
     @destination = ask_for_move_2
     make_move(@destination)
+  end
+
+  # choose piece
+  def ask_for_move(second_time = false)
+    puts "#{@player}: Enter '--help' for more options or" unless second_time
+    print "#{@player}: Enter the coordinates for the piece you'd like to move: "
+    input = gets.chomp
+    move = decode(input)
+    move[0].nil? || move[1].nil? ? input_options(input) : move
+  end
+
+  def input_options(input)
+    case input
+    when '--help'
+      puts "help: format for coordinates is [letter number] with no spaces (ie 'b6')"
+      puts "other options:"
+      puts "\t'--castle-king' for a legal kingside castle"
+      puts "\t'--castle-queen' for a legal queenside castle"
+      puts "\t'--exit' to quit"
+      puts "\t'--save' to save"
+    when '--castle-king'
+    when '--castle-queen'
+    when '--exit'
+      return @parent.play.game_over = true
+    when '--save'
+    end
+    ask_for_move(true)
   end
 
   def print_available_moves
@@ -77,43 +103,13 @@ class Turn < Interface
     end
     if encoded_moves.empty?
       puts "That piece has no legal moves"
-      @input = ask_for_move
+      @input = ask_for_move(true)
       @piece = find_piece_on_board(@input)
       print_available_moves
     else
       print 'Available moves: '
       p encoded_moves
     end
-  end
-
-   def ask_for_move
-    print "#{@player}: Please enter the coordinate of the piece you'd like to move: "
-    input = gets.chomp
-    return @parent.play.game_over = true if input == 'exit'
-    puts "type 'exit' to quit, 'save' to save, coordinates are letter+number (ie a6)" if input == 'help'
-    move = decode(input)
-    move[0].nil? || move[1].nil? ? ask_for_move : move
-  end
-
-   def ask_for_move_2
-    print "#{@player}: Please enter the coordinates of where you'd like to move to: "
-    decode(gets.chomp)
-  end
-
-  def make_move(destination)
-    if @piece.available_moves.include?(destination)
-      @piece.current_pos = destination
-      @@board[@input[0]][@input[1]] = nil
-      @@board[destination[0]][destination[1]] = @piece
-      @parent.play.print_board('render')
-    else
-      illegal_move
-    end
-  end
-
-  def illegal_move
-    puts "#{@player}: That move isn't legal!"
-    make_move(ask_for_move_2)
   end
 
   def find_piece_on_board(array)
@@ -132,6 +128,29 @@ class Turn < Interface
   def illegal_choice
     puts "#{@player}: That isn't a valid choice!"
     find_piece_on_board(ask_for_move)
+  end
+
+  # choose move
+  def ask_for_move_2
+    print "#{@player}: Please enter the coordinates of where you'd like to move to: "
+    decode(gets.chomp)
+  end
+
+  def make_move(destination)
+    if @piece.available_moves.include?(destination)
+      @piece.current_pos = destination
+      @@board[destination[0]][destination[1]] = nil
+      @@board[destination[0]][destination[1]] = @piece
+      @@board[@input[0]][@input[1]] = nil
+      @parent.play.print_board('render')
+    else
+      illegal_move
+    end
+  end
+
+  def illegal_move
+    puts "#{@player}: That move isn't legal!"
+    make_move(ask_for_move_2)
   end
 end
 
