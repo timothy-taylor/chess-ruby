@@ -59,6 +59,7 @@ class Turn < Interface
     @parent = parent
     @@board = parent.play.board
     @input = ask_for_move
+    return if @castle
     return if @parent.play.game_over
     @piece = find_piece_on_board(@input)
     print_available_moves
@@ -76,6 +77,7 @@ class Turn < Interface
   end
 
   def input_options(input)
+    @castle = false
     case input
     when '--help'
       puts "help: format for coordinates is [letter number] with no spaces (ie 'b6')"
@@ -85,14 +87,91 @@ class Turn < Interface
       puts "\t'--exit' to quit"
       puts "\t'--save' to save"
     when '--castle-king'
+      return @castle = kingside_castle_check_white if @player.eql?('white')
+      return @castle = kingside_castle_check_black if @player.eql?('black')
     when '--castle-queen'
+      return @castle = queenside_castle_check_white if @player.eql?('white')
+      return @castle = queenside_castle_check_black if @player.eql?('black')
     when '--exit'
       return @parent.play.game_over = true
     when '--save'
     end
-    ask_for_move(true)
+    ask_for_move(true) 
   end
 
+  def queenside_castle_check_white
+    if @@board[7][1].nil? && @@board[7][2].nil? && @@board[7][3].nil?
+      king = find_piece_on_board([7,4])
+      rook = find_piece_on_board([7,0])
+      if king.id.eql?('wht_kng_1') && rook.id.eql?('wht_rok_1')
+        if king.move_tree.current == king.move_tree.root &&
+            rook.move_tree.current == rook.move_tree.root
+          queenside_castle_move(rook, king, 'white')
+          return true
+        else
+          return illegal_choice
+        end
+      else
+        return illegal_choice
+      end
+    end
+  end
+
+  def queenside_castle_check_black
+      if @@board[0][1].nil? && @@board[0][2].nil? && @@board[0][3].nil?
+      king = find_piece_on_board([0,4])
+      rook = find_piece_on_board([0,0])
+      if king.id.eql?('blk_kng_1') && rook.id.eql?('blk_rok_1')
+        if king.move_tree.current == king.move_tree.root &&
+            rook.move_tree.current == rook.move_tree.root
+          queenside_castle_move(rook, king, 'black')
+          return true
+        else
+          return illegal_choice
+        end
+      else
+        return illegal_choice
+      end
+    end
+  end
+  
+
+  def kingside_castle_check_white
+    if @@board[7][5].nil? && @@board[7][6].nil?
+      king = find_piece_on_board([7,4])
+      rook = find_piece_on_board([7,7])
+      if king.id.eql?('wht_kng_1') && rook.id.eql?('wht_rok_2')
+        if king.move_tree.current == king.move_tree.root &&
+            rook.move_tree.current == rook.move_tree.root
+          kingside_castle_move(rook, king, 'white')
+          return true
+        else
+          return illegal_choice
+        end
+      else
+        return illegal_choice
+      end
+    end
+  end
+
+  def kingside_castle_check_black
+    if @@board[0][5].nil? && @@board[0][6].nil?
+      king = find_piece_on_board([0,4])
+      rook = find_piece_on_board([0,7])
+      if king.id.eql?('wht_kng_1') && rook.id.eql?('wht_rok_2')
+        if king.move_tree.current == king.move_tree.root &&
+              rook.move_tree.current == rook.move_tree.root
+            kingside_castle_move(rook, king, 'black')
+            return true
+        else
+            return illegal_choice
+        end
+      else
+          return illegal_choice
+      end
+    end
+  end
+  
   def print_available_moves
     @parent.play.print_board('render',
                              @piece.available_moves,
@@ -113,12 +192,13 @@ class Turn < Interface
   end
 
   def find_piece_on_board(array)
+    return if array.nil?
     piece = @@board[array[0]][array[1]]
     if piece.nil?
       illegal_choice
-    elsif piece.id.start_with?('blk') && @player == 'black'
+    elsif piece.id.start_with?('blk') && @player.eql?('black')
       piece
-    elsif piece.id.start_with?('wht') && @player == 'white'
+    elsif piece.id.start_with?('wht') && @player.eql?('white')
       piece
     else
       illegal_choice
@@ -151,6 +231,38 @@ class Turn < Interface
   def illegal_move
     puts "#{@player}: That move isn't legal!"
     make_move(ask_for_move_2)
+  end
+
+  def queenside_castle_move(rook, king, player)
+    case player
+    when 'white'
+      @@board[7][3] = rook
+      @@board[7][2] = king
+      @@board[7][4] = nil
+      @@board[7][0] = nil
+    when 'black'
+      @@board[0][3] = rook
+      @@board[0][2] = king
+      @@board[0][4] = nil
+      @@board[0][0] = nil
+    end
+    @parent.play.print_board('render')
+  end
+  
+  def kingside_castle_move(rook, king, player)
+    case player
+    when 'white'
+      @@board[7][5] = rook
+      @@board[7][6] = king
+      @@board[7][4] = nil
+      @@board[7][7] = nil
+    when 'black'
+      @@board[0][5] = rook
+      @@board[0][6] = king
+      @@board[0][4] = nil
+      @@board[0][7] = nil
+    end
+    @parent.play.print_board('render')
   end
 end
 

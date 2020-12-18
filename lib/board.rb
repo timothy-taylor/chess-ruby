@@ -75,7 +75,6 @@ class Board
       return pawn_attack(pos, piece, occupied) if piece.id.include? 'pwn'
       same_team?(occupied, piece) ? false : true
     end
-    # stop moves after a legal attack
     # king side and queen side castling
     # check status for the king
   end
