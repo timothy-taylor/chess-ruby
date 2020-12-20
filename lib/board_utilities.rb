@@ -69,4 +69,40 @@ module BoardUtilities
     return false if piece.id.chr == space.id.chr
     true
   end
+
+  def check(player)
+    if player == 'white'
+      black_pieces = []
+      king = []
+      @board.each { |row|
+        row.each { |square|
+          unless square.nil?
+            king << square if square.id.eql?('wht_kng_1')
+            black_pieces << square if square.id.include?('blk')
+          end
+        }
+      }
+      return checking_pieces = black_pieces.select { |piece|
+        piece.available_moves(self).any? { |move|
+          move == king[0].current_pos
+        }
+      }
+    elsif player == 'black'
+      white_pieces = []
+      king = []
+      @board.each { |row|
+        row.each { |square|
+          unless square.nil?
+            king << square if square.id.eql?('blk_kng_1')
+            white_pieces << square if square.id.include?('wht')
+          end
+        }
+      }
+      return checking_pieces = white_pieces.select { |piece|
+        piece.available_moves(self).any? { |move|
+          move == king[0].current_pos
+        }
+      }
+    end
+  end
 end

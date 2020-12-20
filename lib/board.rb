@@ -12,15 +12,46 @@ class Board
 
   attr_accessor :board, :game_over 
 
-  def initialize
+  def initialize(start_pos = nil)
     @game_over = false
-    @board = make_board
-    @black = create_black_side
-    @white = create_white_side
+
+    # Create & populate the board if not provided
+    if start_pos.nil?
+      @board = Array.new(8) { Array.new(8) }
+      populate('wht')
+      populate('blk')
+    else
+      @board = start_pos
+    end
   end
 
-  def make_board
-    Array.new(8) { Array.new(8) }
+  def create_side(id_array)
+    id_array.each do |id|
+      create_piece(id)
+    end
+  end
+
+  def populate(color_str)
+    ChessSet.create_pawn_ids(color_str)
+    keys = ChessSet::ID.keys.map { |e| e if e.start_with?(color_str) }
+    create_side(keys.compact)
+  end
+
+  def duplicate 
+    array = @board.collect { |e| e.dup }
+    Board.new(array)
+  end
+
+  def create_piece(id)
+    puts sym = ChessSet::ID[id][0]
+    puts pos = ChessSet::ID[id][1]
+    puts class_name = ChessSet::ID[id][2]
+    @board[pos[0]][pos[1]] = class_name.new(id, sym, pos)
+  end
+
+  def move_piece(piece, destination)
+    @board[destination[0]][destination[1]] = piece
+    @board[piece.current_pos[0]][piece.current_pos[1]] = nil
   end
 
   def print_board(command = 'print', available_moves = [], piece_pos = [])
@@ -35,35 +66,6 @@ class Board
     end
   end
 
-  def create_black_side
-    BlackSide.new(self)
-  end
-
-  def create_white_side
-    WhiteSide.new(self)
-  end
- 
-  def move_key(x, y, key, n)
-    case key
-    when 'left'
-      [x, y - (n + 1)]
-    when 'right'
-      [x, y + (n + 1)]
-    when 'down'
-      [x + (n + 1), y]
-    when 'up'
-      [x - (n + 1), y]
-    when 'upleft'
-      [x - (n + 1), y - (n + 1)]
-    when 'upright'
-      [x - (n + 1), y + (n + 1)]
-    when 'downleft'
-      [x + (n + 1), y - (n + 1)]
-    when 'downright'
-      [x + (n + 1), y + (n + 1)]
-    end
-  end
-
   def allowable_move?(pos, piece)
     return nil if pos.nil?
     return false if outside_board?(pos)
@@ -75,8 +77,6 @@ class Board
       return pawn_attack(pos, piece, occupied) if piece.id.include? 'pwn'
       same_team?(occupied, piece) ? false : true
     end
-    # king side and queen side castling
-    # check status for the king
   end
 
   def continue_checking_moves?(pos, piece)
@@ -86,26 +86,3 @@ class Board
   end
 end
 
-# create black pawn ids, instances of the black pieces, populate the board
-class BlackSide < Board
-  include ChessSet
-
-  def initialize(board)
-    @parent = board
-    create_pawn_ids('black')
-    black_keys = ID.keys.map { |e| e if e.start_with?('blk') }
-    create_side(black_keys.compact, @parent)
-  end
-end
-
-# create white pawn ids, instances of white pieces, populate the board
-class WhiteSide < Board
-  include ChessSet
-
-  def initialize(board)
-    @parent = board
-    create_pawn_ids('white')
-    white_keys = ID.keys.map { |e| e if e.start_with?('wht') }
-    create_side(white_keys.compact, @parent)
-  end
-end

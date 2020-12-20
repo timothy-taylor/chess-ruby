@@ -10,15 +10,15 @@ class Pawn
   attr_reader :symbol, :id, :move_tree
   attr_accessor :current_pos
 
-  def initialize(id, parent, symbol, position)
+  def initialize(id, symbol, position)
     @id = id
-    @gameboard = parent
     @symbol = symbol
     @current_pos = position
     @move_tree = Tree.new(position)
   end
 
-  def available_moves(pos = @current_pos)
+  def available_moves(board)
+    pos = @current_pos
     first_move = true
     allowable = []
     possible_moves = []
@@ -28,7 +28,7 @@ class Pawn
     possible_moves << diagonal_take_right(@id, pos)
     possible_moves << first_move_direction(@id, pos, first_move)
     possible_moves.each do |e|
-      allowable << e if @gameboard.allowable_move?(e, self)
+      allowable << e if board.allowable_move?(e, self)
     end
     allowable
   end
