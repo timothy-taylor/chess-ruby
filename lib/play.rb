@@ -90,11 +90,9 @@ class Turn < Interface
       puts "\t'--exit' to quit"
       puts "\t'--save' to save"
     when '--castle-king'
-      return @castle = k_castle_chk_wht if @player.eql?('white')
-      return @castle = k_castle_chk_blk if @player.eql?('black')
+      return @castle = castle_chk('kingside')
     when '--castle-queen'
-      return @castle = q_castle_chk_wht if @player.eql?('white')
-      return @castle = q_castle_chk_blk if @player.eql?('black')
+      return @castle = castle_chk('queenside')
     when '--exit'
       return @parent.play.game_over = true
     when '--save'
@@ -141,76 +139,74 @@ class Turn < Interface
     puts "#{@player}: That isn't a valid choice!"
     find_piece_on_board(ask_for_move)
   end
+  
+  def castle_chk(side)
+    white_queenside = { 'in_between' => [[7,1], [7,2], [7,3]],
+                        'king' => [[7,4], 'wht_kng_1'],
+                        'rook' => [[7,0], 'wht_rok_1'] }
+    black_queenside = { 'in_between' => [[0,1], [0,2], [0,3]],
+                        'king' => [[0,4], 'blk_kng_1'],
+                        'rook' => [[0,0], 'blk_rok_1'] }
+    white_kingside = { 'in_between' => [[7,5], [7,6]],
+                       'king' => [[7,4], 'wht_kng_1'],
+                       'rook' => [[7,7], 'wht_rok_2'] }
+    black_kingside = { 'in_between' => [[0,5], [0,6]],
+                       'king' => [[0,4], 'blk_kng_1'],
+                       'rook' => [[0,7], 'blk_rok_2'] }
 
-  def q_castle_chk_wht
-    if @@board[7][1].nil? && @@board[7][2].nil? && @@board[7][3].nil?
-      king = find_piece_on_board([7,4])
-      rook = find_piece_on_board([7,0])
-      if king.id.eql?('wht_kng_1') && rook.id.eql?('wht_rok_1')
+    case side
+    when 'queenside'
+      king_info = ( @player.eql?('white') ? 
+                   white_queenside.fetch_values('king') : 
+                   black_queenside.fetch_values('king') )
+      rook_info = ( @player.eql?('white') ?
+                   white_queenside.fetch_values('rook') :
+                   black_queenside.fetch_values('rook') )
+      spaces = ( @player.eql?('white') ?
+                white_queenside.fetch_values('in_between') :
+                black_queenside.fetch_values('in_between') )
+    when 'kingside'
+      king_info = ( @player.eql?('white') ? 
+                   white_kingside.fetch_values('king') : 
+                   black_kingside.fetch_values('king') )
+      rook_info = ( @player.eql?('white') ?
+                   white_kingside.fetch_values('rook') :
+                   black_kingside.fetch_values('rook') )
+      spaces = ( @player.eql?('white') ?
+                white_kingside.fetch_values('in_between') :
+                black_kingside.fetch_values('in_between') )
+    end
+    
+    if spaces.all? { |array| 
+      array.all? { |space| 
+        @@board[space[0]][space[1]].nil?
+      }
+    }
+      rook = find_piece_on_board(rook_info[0][0])
+      king = find_piece_on_board(king_info[0][0])
+      if king.id.eql?(king_info[0][1]) && rook.id.eql?(rook_info[0][1])
         if king.previous_pos.nil? && rook.previous_pos.nil?
-          queenside_castle_move(rook, king, 'white')
+          case side
+          when 'queenside'
+            queenside_castle_move(rook, king, @player)
+          when 'kingside'
+            kingside_castle_move(rook, king, @player)
+          end
           return true
         else
+          puts 'previous'
           return illegal_choice
         end
       else
+        puts 'ids'
         return illegal_choice
       end
+    else
+      puts 'spaces'
+      return illegal_choice
     end
   end
-
-  def q_castle_chk_blk
-      if @@board[0][1].nil? && @@board[0][2].nil? && @@board[0][3].nil?
-      king = find_piece_on_board([0,4])
-      rook = find_piece_on_board([0,0])
-      if king.id.eql?('blk_kng_1') && rook.id.eql?('blk_rok_1')
-        if king.previous_pos.nil? && rook.previous_pos.nil?
-          queenside_castle_move(rook, king, 'black')
-          return true
-        else
-          return illegal_choice
-        end
-      else
-        return illegal_choice
-      end
-    end
-  end
-
-  def k_castle_chk_wht
-    if @@board[7][5].nil? && @@board[7][6].nil?
-      king = find_piece_on_board([7,4])
-      rook = find_piece_on_board([7,7])
-      if king.id.eql?('wht_kng_1') && rook.id.eql?('wht_rok_2')
-        if king.previous_pos.nil? && rook.previous_pos.nil?
-          kingside_castle_move(rook, king, 'white')
-          return true
-        else
-          return illegal_choice
-        end
-      else
-        return illegal_choice
-      end
-    end
-  end
-
-  def k_castle_chk_blk(board)
-    if @@board[0][5].nil? && @@board[0][6].nil?
-      king = find_piece_on_board([0,4])
-      rook = find_piece_on_board([0,7])
-      if king.id.eql?('wht_kng_1') && rook.id.eql?('wht_rok_2')
-        if king.previous_pos.nil? && rook.previous_pos.nil?
-          kingside_castle_move(rook, king, 'black')
-          return true
-        else
-          return illegal_choice
-        end
-      else
-        return illegal_choice
-      end
-    end
-  end
-
-
+  
 # choose & make move
   def ask_for_move_2
     print "#{@player}: Please enter the coordinates of where you'd like to move to: "
