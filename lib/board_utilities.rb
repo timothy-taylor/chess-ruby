@@ -3,6 +3,8 @@
 require 'tty-table'
 require 'pastel'
 
+require_relative 'board'
+
 # provides the utilities that the board.rb file uses for its methods
 module BoardUtilities
   def render_array(array, pos)
@@ -58,6 +60,17 @@ module BoardUtilities
 
   def same_team?(piece_one, piece_two)
    piece_one.id.chr == piece_two.id.chr
+  end
+
+  def no_moves_into_check(pos, piece)
+    player = piece.id.start_with?('wht') ? 'white' : 'black'
+    test_board = duplicate
+    test_board.move_piece(piece, pos)
+    if (checking_pieces = test_board.check(player)).any?
+      false
+    else
+      true
+    end
   end
 
   def pawn_move(pos, piece)

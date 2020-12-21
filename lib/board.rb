@@ -37,15 +37,15 @@ class Board
     create_side(keys.compact)
   end
 
-  def duplicate 
+  def duplicate
     array = @board.collect { |e| e.dup }
     Board.new(array)
   end
 
   def create_piece(id)
-    puts sym = ChessSet::ID[id][0]
-    puts pos = ChessSet::ID[id][1]
-    puts class_name = ChessSet::ID[id][2]
+    sym = ChessSet::ID[id][0]
+    pos = ChessSet::ID[id][1]
+    class_name = ChessSet::ID[id][2]
     @board[pos[0]][pos[1]] = class_name.new(id, sym, pos)
   end
 

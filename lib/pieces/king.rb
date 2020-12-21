@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-require_relative '../movement'
 require_relative '../board'
 require_relative '../chess_set'
 
 class King
-  attr_reader :symbol, :id, :move_tree
-  attr_accessor :current_pos
+  attr_reader :symbol, :id
+  attr_accessor :current_pos, :previous_pos
 
   def initialize(id, symbol, position)
     @id = id
     @symbol = symbol
     @current_pos = position
-    @move_tree = Tree.new(position)
+    @previous_pos = nil
   end
 
   def available_moves(board)
@@ -27,9 +26,5 @@ class King
       allowable << e if board.allowable_move?(e, self)
     end
     allowable
-  end
-
-  def moves(dest)
-    @move_tree.populate_and_return(self, dest)
   end
 end
