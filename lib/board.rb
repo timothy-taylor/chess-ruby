@@ -79,7 +79,7 @@ class Board
     end
   end
 
-  def continue_checking_moves?(pos, piece)
+  def continue_moves?(pos, piece)
     return false if pos.nil?
     return false if outside_board?(pos)
     @board[pos[0]][pos[1]].nil? ? true : false

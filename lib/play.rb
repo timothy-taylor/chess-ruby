@@ -139,20 +139,26 @@ class Turn < Interface
     puts "#{@player}: That isn't a valid choice!"
     find_piece_on_board(ask_for_move)
   end
+
+  def try_to_move_into_check
+    test_board = @parent.play.duplicate
+    test_board.move_piece(@piece, @destination)
+    test_board.check(@player).any? ? true : false
+  end
   
   def castle_chk(side)
     white_queenside = { 'in_between' => [[7,1], [7,2], [7,3]],
                         'king' => [[7,4], 'wht_kng_1', [7,2]],
-                        'rook' => [[7,0], 'wht_rok_1', [7,3]] }
+                        'rook' => [[7,0], 'wht_rok_1', [7,3]] }.freeze
     black_queenside = { 'in_between' => [[0,1], [0,2], [0,3]],
                         'king' => [[0,4], 'blk_kng_1', [0,2]],
-                        'rook' => [[0,0], 'blk_rok_1', [0,3]] }
+                        'rook' => [[0,0], 'blk_rok_1', [0,3]] }.freeze
     white_kingside = { 'in_between' => [[7,5], [7,6]],
                        'king' => [[7,4], 'wht_kng_1', [7,6]],
-                       'rook' => [[7,7], 'wht_rok_2', [7,5]] }
+                       'rook' => [[7,7], 'wht_rok_2', [7,5]] }.freeze
     black_kingside = { 'in_between' => [[0,5], [0,6]],
                        'king' => [[0,4], 'blk_kng_1', [0,6]],
-                       'rook' => [[0,7], 'blk_rok_2', [0,5]] }
+                       'rook' => [[0,7], 'blk_rok_2', [0,5]] }.freeze
 
     case side
     when 'queenside'
@@ -177,11 +183,9 @@ class Turn < Interface
                 black_kingside.fetch_values('in_between') )
     end
     
-    if spaces.all? { |array| 
-      array.all? { |space| 
-        @@board[space[0]][space[1]].nil?
-      }
-    }
+    if spaces.all? do |array| 
+      array.all? { |space| @@board[space[0]][space[1]].nil? }
+    end
       rook = find_piece_on_board(rook_info[0][0])
       king = find_piece_on_board(king_info[0][0])
       if king.id.eql?(king_info[0][1]) && rook.id.eql?(rook_info[0][1])
@@ -198,7 +202,7 @@ class Turn < Interface
       return illegal_choice
     end
   end
-  
+   
 # choose & make move
   def ask_for_move_2
     print "#{@player}: Please enter the coordinates of where you'd like to move to: "
@@ -207,6 +211,7 @@ class Turn < Interface
   
   def make_move
     if @piece.available_moves(@parent.play).include?(@destination)
+      return illegal_move(true) if try_to_move_into_check
       @parent.play.move_piece(@piece, @destination)
       @piece.previous_pos = @piece.current_pos
       @piece.current_pos = @destination
@@ -216,18 +221,18 @@ class Turn < Interface
     end
   end
 
-  def illegal_move
-    puts "#{@player}: That move isn't legal!"
+  def illegal_move(into_check = false)
+    puts "#{@player}: That move isn't legal#{into_check ? ' due to check' : ''}!"
     @destination = ask_for_move_2
     make_move
   end
-
+ 
   def make_move_within_check
     test_board = @parent.play.duplicate
     test_board.move_piece(@piece, @destination) 
     if @piece.available_moves(@parent.play).include?(@destination)
       if (checking_pieces = test_board.check(@player)).any? 
-        illegal_move_check(checking_pieces) 
+        illegal_move_within_check(checking_pieces) 
       else
         make_move
       end
@@ -235,8 +240,8 @@ class Turn < Interface
       illegal_move
     end
   end
-
-  def illegal_move_check(pieces)
+ 
+  def illegal_move_within_check(pieces)
     in_check_alert(pieces, false)
     @destination = ask_for_move_2
     make_move_within_check

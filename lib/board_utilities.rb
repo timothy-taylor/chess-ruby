@@ -62,17 +62,6 @@ module BoardUtilities
    piece_one.id.chr == piece_two.id.chr
   end
 
-  def no_moves_into_check(pos, piece)
-    player = piece.id.start_with?('wht') ? 'white' : 'black'
-    test_board = duplicate
-    test_board.move_piece(piece, pos)
-    if (checking_pieces = test_board.check(player)).any?
-      false
-    else
-      true
-    end
-  end
-
   def pawn_move(pos, piece)
     pos[1] == piece.current_pos[1] ? true : false
   end
@@ -84,38 +73,25 @@ module BoardUtilities
   end
 
   def check(player)
-    if player == 'white'
-      black_pieces = []
-      king = []
-      @board.each { |row|
-        row.each { |square|
-          unless square.nil?
-            king << square if square.id.eql?('wht_kng_1')
-            black_pieces << square if square.id.include?('blk')
-          end
-        }
-      }
-      return checking_pieces = black_pieces.select { |piece|
-        piece.available_moves(self).any? { |move|
-          move == king[0].current_pos
-        }
-      }
-    elsif player == 'black'
-      white_pieces = []
-      king = []
-      @board.each { |row|
-        row.each { |square|
-          unless square.nil?
-            king << square if square.id.eql?('blk_kng_1')
-            white_pieces << square if square.id.include?('wht')
-          end
-        }
-      }
-      return checking_pieces = white_pieces.select { |piece|
-        piece.available_moves(self).any? { |move|
-          move == king[0].current_pos
-        }
-      }
-    end
+    piece_id = (player.eql?('white') ? 'wht_kng_1' : 'blk_kng_1')
+    color_id = (player.eql?('white') ? 'blk' : 'wht')
+    find_checking_pieces(piece_id, color_id)
+  end
+
+  def find_checking_pieces(piece_id, color_id)
+    king = []
+    pieces = []
+    @board.each_with_index { |row, i| row.each_with_index do |square, j|
+        unless square.nil?
+          king << [i,j] if square.id.eql?(piece_id)
+          pieces << square if square.id.include?(color_id)
+        end
+      end
+    }
+    return pieces.select { |piece|
+      piece.available_moves(self).any? do |move|
+        move == king[0]
+      end
+    }
   end
 end

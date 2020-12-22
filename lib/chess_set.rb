@@ -36,7 +36,7 @@ class Piece
       move = move_key(x, y, key, n)
       n += 1
       array << move if board.allowable_move?(move, self)
-      legal_move = board.continue_checking_moves?(move, self)
+      legal_move = board.continue_moves?(move, self)
     end
     array
   end
