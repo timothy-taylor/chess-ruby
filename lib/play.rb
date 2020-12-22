@@ -142,17 +142,17 @@ class Turn < Interface
   
   def castle_chk(side)
     white_queenside = { 'in_between' => [[7,1], [7,2], [7,3]],
-                        'king' => [[7,4], 'wht_kng_1'],
-                        'rook' => [[7,0], 'wht_rok_1'] }
+                        'king' => [[7,4], 'wht_kng_1', [7,2]],
+                        'rook' => [[7,0], 'wht_rok_1', [7,3]] }
     black_queenside = { 'in_between' => [[0,1], [0,2], [0,3]],
-                        'king' => [[0,4], 'blk_kng_1'],
-                        'rook' => [[0,0], 'blk_rok_1'] }
+                        'king' => [[0,4], 'blk_kng_1', [0,2]],
+                        'rook' => [[0,0], 'blk_rok_1', [0,3]] }
     white_kingside = { 'in_between' => [[7,5], [7,6]],
-                       'king' => [[7,4], 'wht_kng_1'],
-                       'rook' => [[7,7], 'wht_rok_2'] }
+                       'king' => [[7,4], 'wht_kng_1', [7,6]],
+                       'rook' => [[7,7], 'wht_rok_2', [7,5]] }
     black_kingside = { 'in_between' => [[0,5], [0,6]],
-                       'king' => [[0,4], 'blk_kng_1'],
-                       'rook' => [[0,7], 'blk_rok_2'] }
+                       'king' => [[0,4], 'blk_kng_1', [0,6]],
+                       'rook' => [[0,7], 'blk_rok_2', [0,5]] }
 
     case side
     when 'queenside'
@@ -186,23 +186,15 @@ class Turn < Interface
       king = find_piece_on_board(king_info[0][0])
       if king.id.eql?(king_info[0][1]) && rook.id.eql?(rook_info[0][1])
         if king.previous_pos.nil? && rook.previous_pos.nil?
-          case side
-          when 'queenside'
-            queenside_castle_move(rook, king, @player)
-          when 'kingside'
-            kingside_castle_move(rook, king, @player)
-          end
+          castle_move(rook, king, king_info[0][2], rook_info[0][2])
           return true
         else
-          puts 'previous'
           return illegal_choice
         end
       else
-        puts 'ids'
         return illegal_choice
       end
     else
-      puts 'spaces'
       return illegal_choice
     end
   end
@@ -250,35 +242,15 @@ class Turn < Interface
     make_move_within_check
   end
 
-def queenside_castle_move(rook, king, player)
-    case player
-    when 'white'
-      @@board[7][3] = rook
-      @@board[7][2] = king
-      @@board[7][4] = nil
-      @@board[7][0] = nil
-    when 'black'
-      @@board[0][3] = rook
-      @@board[0][2] = king
-      @@board[0][4] = nil
-      @@board[0][0] = nil
-    end
-    @parent.play.print_board('render')
-  end
-
-  def kingside_castle_move(rook, king, player)
-    case player
-    when 'white'
-      @@board[7][5] = rook
-      @@board[7][6] = king
-      @@board[7][4] = nil
-      @@board[7][7] = nil
-    when 'black'
-      @@board[0][5] = rook
-      @@board[0][6] = king
-      @@board[0][4] = nil
-      @@board[0][7] = nil
-    end
+def castle_move(rook, king, king_dest, rook_dest)
+    rook.previous_pos = rook.current_pos
+    rook.current_pos = rook_dest
+    king.previous_pos = king.current_pos
+    king.current_pos = king_dest
+    @@board[rook.current_pos[0]][rook.current_pos[1]] = rook
+    @@board[king.current_pos[0]][king.current_pos[1]] = king
+    @@board[rook.previous_pos[0]][rook.previous_pos[1]] = nil
+    @@board[king.previous_pos[0]][king.previous_pos[1]] = nil
     @parent.play.print_board('render')
   end
 end
