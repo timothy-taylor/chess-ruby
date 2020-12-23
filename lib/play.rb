@@ -54,26 +54,46 @@ class Turn < Interface
     @player = player
     @parent = parent
     @@board = parent.play.board
-    checking_pieces = @parent.play.check(@player)
-    in_check = checking_pieces.any?
-    in_check_alert(checking_pieces) if in_check
+    check_methods
+    choose_piece_methods
+    choose_move_methods
+  end
+
+  def check_methods
+    checking_pieces = @parent.play.check(@player, @parent.play)
+    if checking_pieces.any?
+      if @parent.play.checkmate(@player, @parent.play)
+        puts "Checkmate!"
+        return @parent.play.game_over = true
+      else
+        in_check_alert(checking_pieces)
+      end
+    end
+  end
+
+  def choose_piece_methods
+    return if @parent.play.game_over
     input = ask_for_move
     return if @castle
     return if @parent.play.game_over
     @piece = find_piece_on_board(input)
     print_available_moves
+  end
+
+  def choose_move_methods
+    return if @castle
+    return if @parent.play.game_over
     @destination = ask_for_move_2
-    in_check ? make_move_within_check : make_move
+    make_move
   end
 
   def in_check_alert(pieces, is_new = true)
     puts "#{@player}: You are#{is_new ? '' : ' still'} in check by #{pieces.collect(&:id)}!"
   end
 
-# choose piece
   def ask_for_move(second_time = false)
     puts "#{@player}: Enter '--help' for more options or" unless second_time
-    print "#{@player}: Enter the coordinates for the piece you'd like to move: "
+    print "#{@player}: Enter coordinates for the piece you'd like to move: "
     input = gets.chomp
     move = decode(input)
     move[0].nil? || move[1].nil? ? input_options(input) : move
@@ -93,21 +113,23 @@ class Turn < Interface
       return @castle = castle_chk('kingside')
     when '--castle-queen'
       return @castle = castle_chk('queenside')
+    when '--undo'
+      #return to the previous save
     when '--exit'
       return @parent.play.game_over = true
     when '--save'
-    when 'pry'
-      binding.pry
+      # 2 save states, the beginning of the current turn
+      # and the beginning of last turn
     end
     ask_for_move(true) 
   end
   
   def print_available_moves
     @parent.play.print_board('render',
-                             @piece.available_moves(@parent.play),
+                             @piece.available_moves(@parent.play, true),
                              @piece.current_pos)
     encoded_moves = []
-    @piece.available_moves(@parent.play).map do |each|
+    @piece.available_moves(@parent.play, true).map do |each|
       encoded_moves << encode(each)
     end
     if encoded_moves.empty?
@@ -140,12 +162,6 @@ class Turn < Interface
     find_piece_on_board(ask_for_move)
   end
 
-  def try_to_move_into_check
-    test_board = @parent.play.duplicate
-    test_board.move_piece(@piece, @destination)
-    test_board.check(@player).any? ? true : false
-  end
-  
   def castle_chk(side)
     white_queenside = { 'in_between' => [[7,1], [7,2], [7,3]],
                         'king' => [[7,4], 'wht_kng_1', [7,2]],
@@ -203,15 +219,36 @@ class Turn < Interface
     end
   end
    
-# choose & make move
-  def ask_for_move_2
-    print "#{@player}: Please enter the coordinates of where you'd like to move to: "
-    decode(gets.chomp)
+  def ask_for_move_2(second_time = false)
+    return if @back
+    puts "#{@player}: Enter '--help' for more options or" unless second_time
+    print "#{@player}: Enter coordinates of where you'd like to move to: "
+    input = gets.chomp
+    move = decode(input)
+    move[0].nil? || move[1].nil? ? input_options_2(input) : move
   end
-  
+
+  def input_options_2(input)
+    @back = false
+    case input
+    when '--help'
+      puts "help: format for coordinates is [letter number] with no spaces (ie 'b6')"
+      puts "other options:"
+      puts "\t'--back' to pick a different piece"
+      puts "\t'--exit' to quit"
+      puts "\t'--save' to save"
+    when '--back'
+      # once save works, auto save at the beginning of each turn
+      # use this to go back to the beginning of the turn
+    when '--exit'
+      return @parent.play.game_over = true
+    when '--save'
+    end
+    ask_for_move_2(true) 
+  end
+
   def make_move
-    if @piece.available_moves(@parent.play).include?(@destination)
-      return illegal_move(true) if try_to_move_into_check
+    if @piece.available_moves(@parent.play, true).include?(@destination)
       @parent.play.move_piece(@piece, @destination)
       @piece.previous_pos = @piece.current_pos
       @piece.current_pos = @destination
@@ -227,27 +264,7 @@ class Turn < Interface
     make_move
   end
  
-  def make_move_within_check
-    test_board = @parent.play.duplicate
-    test_board.move_piece(@piece, @destination) 
-    if @piece.available_moves(@parent.play).include?(@destination)
-      if (checking_pieces = test_board.check(@player)).any? 
-        illegal_move_within_check(checking_pieces) 
-      else
-        make_move
-      end
-    else
-      illegal_move
-    end
-  end
- 
-  def illegal_move_within_check(pieces)
-    in_check_alert(pieces, false)
-    @destination = ask_for_move_2
-    make_move_within_check
-  end
-
-def castle_move(rook, king, king_dest, rook_dest)
+  def castle_move(rook, king, king_dest, rook_dest)
     rook.previous_pos = rook.current_pos
     rook.current_pos = rook_dest
     king.previous_pos = king.current_pos

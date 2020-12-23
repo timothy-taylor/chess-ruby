@@ -15,7 +15,7 @@ module BoardUtilities
     puts table.render(:unicode, padding: [0, 1]) { |renderer|
       renderer.border.separator = :each_row
       renderer.filter = lambda { |val, row, col|
-        col == pos_col && row == pos_row ? pastel.red(val) : val
+        col == pos_col && row == pos_row ? pastel.yellow(val) : val
       }
     }
   end
@@ -72,26 +72,47 @@ module BoardUtilities
     true
   end
 
-  def check(player)
-    piece_id = (player.eql?('white') ? 'wht_kng_1' : 'blk_kng_1')
-    color_id = (player.eql?('white') ? 'blk' : 'wht')
-    find_checking_pieces(piece_id, color_id)
+  def try_to_move_into_check(destination, piece, parent)
+    player = ( piece.id.start_with?('wht') ? 'white' : 'black' )
+    test_board = parent.duplicate
+    test_board.move_piece(piece, destination)
+    test_board.check(player, test_board).any? ? true : false
   end
 
-  def find_checking_pieces(piece_id, color_id)
+  def check(player, board)
+    piece_id = (player.eql?('white') ? 'wht_kng_1' : 'blk_kng_1')
+    color_id = (player.eql?('white') ? 'blk' : 'wht')
+    find_checking_pieces(piece_id, color_id, board)
+  end
+
+  def find_checking_pieces(piece_id, color_id, parent)
     king = []
     pieces = []
-    @board.each_with_index { |row, i| row.each_with_index do |square, j|
+    parent.board.each_with_index { |row, i|
+      row.each_with_index do |square, j|
         unless square.nil?
           king << [i,j] if square.id.eql?(piece_id)
           pieces << square if square.id.include?(color_id)
         end
       end
     }
-    return pieces.select { |piece|
-      piece.available_moves(self).any? do |move|
-        move == king[0]
+    return pieces.select do |piece|
+      piece.available_moves(parent).any? { |move| move == king[0] } 
+    end
+  end
+
+  def checkmate(player, parent)
+    pieces = []
+    color_id = (player.eql?('white') ? 'wht' : 'blk')
+    parent.board.each { |row|
+      row.each do |square|
+        unless square.nil?
+          pieces << square if square.id.include?(color_id)
+        end
       end
     }
-  end
+    return pieces.all? do |piece|
+      piece.available_moves(parent, true).all? { |move| move.empty? }
+    end
+  end    
 end

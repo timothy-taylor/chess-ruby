@@ -65,24 +65,5 @@ class Board
       render_array(format_array, piece_pos)
     end
   end
-
-  def allowable_move?(pos, piece)
-    return nil if pos.nil?
-    return false if outside_board?(pos)
-    occupied = @board[pos[0]][pos[1]]
-    if occupied.nil?
-      return pawn_move(pos, piece) if piece.id.include? 'pwn'
-      true
-    else
-      return pawn_attack(pos, piece, occupied) if piece.id.include? 'pwn'
-      same_team?(occupied, piece) ? false : true
-    end
-  end
-
-  def continue_moves?(pos, piece)
-    return false if pos.nil?
-    return false if outside_board?(pos)
-    @board[pos[0]][pos[1]].nil? ? true : false
-  end
 end
 
