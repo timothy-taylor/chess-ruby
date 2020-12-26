@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
-require 'pry'
-
 require_relative 'board_utilities'
 
+# base functionality that is inherented by the individual pieces
 class Piece
   include BoardUtilities
 
   attr_reader :symbol, :id
   attr_accessor :current_pos, :previous_pos
 
-  def initialize(id, symbol, position)
+  def initialize(id, symbol, position, prev_pos = nil)
     @id = id
     @symbol = symbol
     @current_pos = position
-    @previous_pos = nil
+    @previous_pos = prev_pos
   end 
 
   def available_moves(board, check = nil)
@@ -184,14 +183,15 @@ class Knight < Piece
   end
 end
 
+# provides data to populate the chessboard with correct pieces
 module ChessSet
   BP = { pawn: '♙', rook: '♖', knight: '♘',
          bishop: '♗', queen: '♕', king: '♔' }.freeze
   WP = { pawn: '♟︎', rook: '♜', knight: '♞',
          bishop: '♝', queen: '♛', king: '♚' }.freeze
 
-  # important to note: the pawn IDs are created in the method below
-  # so any changes here must be echoed in the method...
+  # the pawn IDs are created in the method below
+  # so any changes here must be echoed in that method...
   ID = { 'blk_kht_1' => [BP[:knight], [0, 1], Knight],
          'blk_kht_2' => [BP[:knight], [0, 6], Knight],
          'wht_kht_1' => [WP[:knight], [7, 1], Knight],

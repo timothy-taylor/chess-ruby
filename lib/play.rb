@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require 'pry'
+require 'json'
 
 require_relative 'board'
 
+# provide input encoding/decoding, creates a game of turns
 class Interface
-  attr_accessor :play
+  attr_accessor :play, :turn_number
 
   DECODE = { 'h' => 0, 'g' => 1, 'f' => 2, 'e' => 3, 'd' => 4,
              'c' => 5, 'b' => 6, 'a' => 7,
@@ -18,10 +19,12 @@ class Interface
   ENCODE_NUM = { '7' => 1, '6' => 2, '5' => 3, '4' => 4,
                  '3' => 5, '2' => 6, '1' => 7, '0' => 8 }.freeze
 
-  def initialize
-    @play = Board.new
-    @turn_number = 0
+  def initialize(turn = nil, save = nil, loaded = nil)
+    @play = ( save.nil? ? Board.new : Board.new(save, loaded) )
+    @turn_number = ( turn.nil? ? 0 : turn )
     @current_player = find_player
+    @play.print_board('render')
+    play_game
   end
 
   def decode(input)
@@ -42,11 +45,12 @@ class Interface
     @current_player = find_player
   end
 
-  def game
+  def play_game
     new_turn until @play.game_over
   end
 end
 
+# Main functionality for gameplay
 class Turn < Interface
   attr_accessor :piece, :player
 
@@ -118,12 +122,11 @@ class Turn < Interface
     when '--exit'
       return @parent.play.game_over = true
     when '--save'
-      # 2 save states, the beginning of the current turn
-      # and the beginning of last turn
+      @parent.play.save_game(@@board, @parent.turn_number)
     end
     ask_for_move(true) 
   end
-  
+
   def print_available_moves
     @parent.play.print_board('render',
                              @piece.available_moves(@parent.play, true),
@@ -238,11 +241,10 @@ class Turn < Interface
       puts "\t'--exit' to quit"
       puts "\t'--save' to save"
     when '--back'
-      # once save works, auto save at the beginning of each turn
-      # use this to go back to the beginning of the turn
+      puts 'Returning...'
+      choose_piece_methods
     when '--exit'
       return @parent.play.game_over = true
-    when '--save'
     end
     ask_for_move_2(true) 
   end
@@ -279,9 +281,39 @@ end
 
 class Start
   def initialize
+    if File.exist?('.save')
+      check_for_save
+    else
+      new_game
+    end
+  end
+
+  def check_for_save
+    print "Welcome to chess, enter [0] to start a new game or [1] to load a game: "
+    input = gets[0].to_i
+    unless (0..1).include?(input)
+      puts "Sorry, I didn't get that..."
+      check_for_save
+    else
+      if input.eql?(0)
+        new_game
+      else
+        load_game
+      end
+    end
+  end
+
+  def new_game
     start = Interface.new
-    start.play.print_board('render')
-    start.game
+  end
+
+  def load_game
+    game_state = File.open(".save", "r"){ |file| file.read }
+    loaded = JSON.load(game_state)
+    puts "Game loaded."
+    puts turn = loaded['turn']
+    p board = loaded['board']
+    start = Interface.new(turn, board, true)
   end
 end
 
