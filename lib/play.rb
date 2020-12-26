@@ -295,11 +295,7 @@ class Start
       puts "Sorry, I didn't get that..."
       check_for_save
     else
-      if input.eql?(0)
-        new_game
-      else
-        load_game
-      end
+      input.eql?(0) ? new_game : load_game
     end
   end
 
@@ -310,9 +306,8 @@ class Start
   def load_game
     game_state = File.open(".save", "r"){ |file| file.read }
     loaded = JSON.load(game_state)
-    puts "Game loaded."
-    puts turn = loaded['turn']
-    p board = loaded['board']
+    turn = loaded['turn']
+    board = loaded['board']
     start = Interface.new(turn, board, true)
   end
 end

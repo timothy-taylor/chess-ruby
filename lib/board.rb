@@ -40,8 +40,8 @@ class Board
 
   def format_for_serialization(array)
     new_array = []
-    format = array.map { |row| 
-      row.map { |square|
+    array.each { |row| 
+      row.each { |square|
         new_array << [square.id, square.symbol, square.current_pos, square.previous_pos] unless square.nil?
       }
     }
